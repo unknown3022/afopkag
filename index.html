@@ -1182,7 +1182,7 @@ async function doFire(af_id, customer_id, game, event, gameName, queueItem) {
   };
   log(`→ Firing [${gameName}] ${event.tmpl} | af_id: ${af_id}`, 'warn');
   try {
-    const res = await fetch(`https://api2.appsflyer.com/inappevent/${appId}`, {
+    const res = await fetch(`/api/proxy?appId=${appId}`, {
       method: 'POST',
       headers: { 'authentication': game.key, 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
