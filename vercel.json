@@ -1,0 +1,3 @@
+json{
+  "rewrites": [{ "source": "/(.*)", "destination": "/appsflyer_scheduler.html" }]
+}
