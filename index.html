@@ -1054,16 +1054,18 @@ let nextId = 1;
 let timerFilter = 'all';
 let activeTab = 'scheduler';
 
-window.onload = () => {
+window.onload = async () => {
   const sel = document.getElementById('game_select');
   Object.keys(GAMES).forEach(name => {
     const o = document.createElement('option');
     o.value = name; o.textContent = name;
     sel.appendChild(o);
   });
+  await loadQueue();
   setInterval(tickAll, 1000);
   setInterval(renderTimersTab, 500);
   setInterval(updateClock, 200);
+  setInterval(syncQueue, 5000);
 };
 
 // ===== TABS =====
@@ -1127,6 +1129,52 @@ function getFormValues() {
   return { af_id, customer_id, gameName, game: GAMES[gameName], event: GAMES[gameName].events[evIdx], totalSecs: hours*3600+mins*60+secs };
 }
 
+// ===== DATABASE SYNC =====
+async function saveQueue() {
+  try {
+    await fetch('/api/db?action=set', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queue })
+    });
+  } catch(e) { console.warn('Save failed', e); }
+}
+
+async function loadQueue() {
+  try {
+    const res = await fetch('/api/db?action=get');
+    const data = await res.json();
+    if (data.queue && Array.isArray(data.queue)) {
+      queue = data.queue;
+      if (queue.length) nextId = Math.max(...queue.map(i => i.id)) + 1;
+      renderQueue();
+      renderTimersTab();
+      updateBadge();
+      log(`Loaded ${queue.length} item(s) from database`, 'info');
+    }
+  } catch(e) { console.warn('Load failed', e); }
+}
+
+async function syncQueue() {
+  // Pull latest from DB and merge — keeps all tabs in sync
+  try {
+    const res = await fetch('/api/db?action=get');
+    const data = await res.json();
+    if (data.queue && Array.isArray(data.queue)) {
+      // Only update items we don't have locally (added from another tab)
+      const localIds = new Set(queue.map(i => i.id));
+      const newItems = data.queue.filter(i => !localIds.has(i.id));
+      if (newItems.length) {
+        queue = [...queue, ...newItems];
+        renderQueue();
+        renderTimersTab();
+        updateBadge();
+        log(`Synced ${newItems.length} new item(s) from another session`, 'info');
+      }
+    }
+  } catch(e) {}
+}
+
 // ===== SCHEDULE =====
 function scheduleEvent() {
   const v = getFormValues();
@@ -1146,6 +1194,7 @@ function scheduleEvent() {
   queue.push(item);
   renderQueue();
   updateBadge();
+  saveQueue();
   log(`Scheduled: [${v.gameName}] ${v.event.name} in ${fmtSecs(v.totalSecs)}`, 'info');
 }
 
@@ -1190,14 +1239,14 @@ async function doFire(af_id, customer_id, game, event, gameName, queueItem) {
     const text = await res.text();
     if (res.ok || res.status === 200) {
       log(`✓ [${res.status}] ${gameName} → ${event.tmpl} fired OK`, 'success');
-      if (queueItem) { queueItem.status = 'done'; renderQueue(); updateBadge(); }
+      if (queueItem) { queueItem.status = 'done'; renderQueue(); updateBadge(); saveQueue(); }
     } else {
       log(`✗ [${res.status}] ${gameName} → ${event.tmpl}: ${text.slice(0,120)}`, 'error');
-      if (queueItem) { queueItem.status = 'failed'; renderQueue(); updateBadge(); }
+      if (queueItem) { queueItem.status = 'failed'; renderQueue(); updateBadge(); saveQueue(); }
     }
   } catch (err) {
     log(`✗ Network error: ${err.message}`, 'error');
-    if (queueItem) { queueItem.status = 'failed'; renderQueue(); updateBadge(); }
+    if (queueItem) { queueItem.status = 'failed'; renderQueue(); updateBadge(); saveQueue(); }
   }
 }
 
@@ -1206,6 +1255,7 @@ function removeItem(id) {
   renderQueue();
   updateBadge();
   renderTimersTab();
+  saveQueue();
 }
 
 // ===== QUEUE (right sidebar) =====
