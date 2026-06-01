@@ -1200,7 +1200,7 @@ function scheduleEvent() {
     game: v.game,
     event: v.event,
     totalSecs: v.totalSecs,
-    remaining: v.totalSecs,
+    fireAt: Date.now() + v.totalSecs * 1000,
     status: 'pending'
   };
   queue.push(item);
@@ -1218,10 +1218,10 @@ function fireNow() {
 
 // ===== TICK =====
 function tickAll() {
+  const now = Date.now();
   queue.forEach(item => {
     if (item.status !== 'pending') return;
-    item.remaining--;
-    if (item.remaining <= 0) {
+    if (now >= item.fireAt) {
       item.status = 'firing';
       doFire(item.af_id, item.customer_id, item.game, item.event, item.gameName, item);
     }
@@ -1282,7 +1282,7 @@ function renderQueue() {
         <div class="qi-tmpl">${item.event.tmpl}</div>
       </div>
       <span class="qi-status ${item.status}">${item.status}</span>
-      ${item.status === 'pending' ? `<div class="qi-timer">${fmtSecs(item.remaining)}</div>` : ''}
+      ${item.status === 'pending' ? `<div class="qi-timer">${fmtSecs(Math.max(0, Math.ceil((item.fireAt - Date.now()) / 1000)))}</div>` : ''}
       <button class="qi-remove" onclick="removeItem(${item.id})">×</button>
     </div>
   `).join('');
@@ -1304,11 +1304,12 @@ function clearFinished() {
 }
 
 function timerCardHTML(item) {
-  const pct = item.totalSecs > 0 ? Math.max(0, item.remaining / item.totalSecs * 100) : 0;
-  const isDanger = item.remaining <= 10 && item.status === 'pending';
+  const remaining = Math.max(0, Math.ceil((item.fireAt - Date.now()) / 1000));
+  const pct = item.totalSecs > 0 ? Math.max(0, remaining / item.totalSecs * 100) : 0;
+  const isDanger = remaining <= 10 && item.status === 'pending';
   const fillClass = item.status === 'done' ? 'done' : item.status === 'failed' ? 'failed' : isDanger ? 'danger' : '';
   const countdownClass = item.status === 'done' ? 'done' : isDanger ? 'danger' : '';
-  const countdownText = item.status === 'done' ? 'FIRED' : item.status === 'failed' ? 'FAILED' : item.status === 'firing' ? 'SENDING…' : fmtSecs(item.remaining);
+  const countdownText = item.status === 'done' ? 'FIRED' : item.status === 'failed' ? 'FAILED' : item.status === 'firing' ? 'SENDING…' : fmtSecs(remaining);
   return `
     <div class="timer-card ${item.status}">
       <div class="tc-top">
@@ -1377,7 +1378,7 @@ function renderTimersTab() {
 
 // ===== CLOCK =====
 function updateClock() {
-  const pending = queue.filter(i => i.status === 'pending').sort((a,b) => a.remaining - b.remaining);
+  const pending = queue.filter(i => i.status === 'pending').sort((a,b) => a.fireAt - b.fireAt);
   const display = document.getElementById('clock_display');
   const label   = document.getElementById('clock_label');
   const ring    = document.getElementById('ring_progress');
@@ -1387,10 +1388,11 @@ function updateClock() {
     ring.style.strokeDashoffset = 0; ring.classList.remove('danger'); return;
   }
   const next = pending[0];
-  display.textContent = fmtSecs(next.remaining);
+  const remaining = Math.max(0, Math.ceil((next.fireAt - Date.now()) / 1000));
+  display.textContent = fmtSecs(remaining);
   label.textContent = next.event.tmpl;
-  ring.style.strokeDashoffset = C * (1 - next.remaining / next.totalSecs);
-  ring.classList.toggle('danger', next.remaining <= 10);
+  ring.style.strokeDashoffset = C * (1 - remaining / next.totalSecs);
+  ring.classList.toggle('danger', remaining <= 10);
 }
 
 function updateBadge() {
