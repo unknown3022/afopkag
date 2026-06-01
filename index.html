@@ -1129,25 +1129,33 @@ function getFormValues() {
   return { af_id, customer_id, gameName, game: GAMES[gameName], event: GAMES[gameName].events[evIdx], totalSecs: hours*3600+mins*60+secs };
 }
 
-// ===== DATABASE SYNC =====
+// ===== DATABASE SYNC (Upstash direct) =====
+const UPSTASH_URL = "https://wealthy-unicorn-140681.upstash.io";
+const UPSTASH_TOKEN = "ggAAAAAAAiWJAAIgcDFNvDZtddNL9h_RvekjdjCd7DJP2SeYudr3bO_h_jdjbg";
+
 async function saveQueue() {
   try {
-    await fetch('/api/db?action=set', {
+    const r = await fetch(`${UPSTASH_URL}/set/scheduler_queue`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ queue })
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(JSON.stringify(queue))
     });
+    const d = await r.json();
+    console.log('Save response:', JSON.stringify(d));
   } catch(e) { console.warn('Save failed', e); }
 }
 
 async function loadQueue() {
   try {
-    const res = await fetch('/api/db?action=get');
-    const data = await res.json();
+    const r = await fetch(`${UPSTASH_URL}/get/scheduler_queue`, {
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
+    });
+    const data = await r.json();
     console.log('DB load response:', JSON.stringify(data));
-    if (data.queue && Array.isArray(data.queue)) {
-      queue = data.queue;
-      if (queue.length) nextId = Math.max(...queue.map(i => i.id)) + 1;
+    const loaded = data.result ? JSON.parse(data.result) : [];
+    if (Array.isArray(loaded) && loaded.length) {
+      queue = loaded;
+      nextId = Math.max(...queue.map(i => i.id)) + 1;
       renderQueue();
       renderTimersTab();
       updateBadge();
@@ -1157,14 +1165,15 @@ async function loadQueue() {
 }
 
 async function syncQueue() {
-  // Pull latest from DB and merge — keeps all tabs in sync
   try {
-    const res = await fetch('/api/db?action=get');
-    const data = await res.json();
-    if (data.queue && Array.isArray(data.queue)) {
-      // Only update items we don't have locally (added from another tab)
+    const r = await fetch(`${UPSTASH_URL}/get/scheduler_queue`, {
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
+    });
+    const data = await r.json();
+    const loaded = data.result ? JSON.parse(data.result) : [];
+    if (Array.isArray(loaded)) {
       const localIds = new Set(queue.map(i => i.id));
-      const newItems = data.queue.filter(i => !localIds.has(i.id));
+      const newItems = loaded.filter(i => !localIds.has(i.id));
       if (newItems.length) {
         queue = [...queue, ...newItems];
         renderQueue();
