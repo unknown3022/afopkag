@@ -1144,6 +1144,7 @@ async function loadQueue() {
   try {
     const res = await fetch('/api/db?action=get');
     const data = await res.json();
+    console.log('DB load response:', JSON.stringify(data));
     if (data.queue && Array.isArray(data.queue)) {
       queue = data.queue;
       if (queue.length) nextId = Math.max(...queue.map(i => i.id)) + 1;
