@@ -1152,7 +1152,9 @@ async function loadQueue() {
     });
     const data = await r.json();
     console.log('DB load response:', JSON.stringify(data));
-    const loaded = data.result ? JSON.parse(data.result) : [];
+    let loaded = data.result;
+    if (typeof loaded === 'string') loaded = JSON.parse(loaded);
+    if (typeof loaded === 'string') loaded = JSON.parse(loaded); // handle double encoding
     if (Array.isArray(loaded) && loaded.length) {
       queue = loaded;
       nextId = Math.max(...queue.map(i => i.id)) + 1;
