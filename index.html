@@ -8,16 +8,22 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --border: #1e1e2e;
-    --accent: #00e5a0;
-    --accent2: #7c3aed;
-    --text: #e8e8f0;
-    --muted: #5a5a7a;
-    --danger: #ff4d6d;
+    --bg: #07070f;
+    --surface: #0e0e1a;
+    --surface2: #12121f;
+    --border: #1a1a2e;
+    --border2: #242438;
+    --accent: #6366f1;
+    --accent-glow: rgba(99,102,241,0.25);
+    --accent-soft: rgba(99,102,241,0.1);
+    --accent2: #8b5cf6;
+    --text: #f0f0fa;
+    --text2: #a0a0c0;
+    --muted: #4a4a6a;
+    --danger: #f43f5e;
     --warn: #f59e0b;
-    --card: #13131c;
+    --success: #10b981;
+    --card: #0c0c18;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -25,10 +31,11 @@
     color: var(--text);
     font-family: 'Space Grotesk', sans-serif;
     min-height: 100vh;
-    padding: 2rem;
+    padding: 2rem 2.5rem;
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,229,160,0.08), transparent),
-      radial-gradient(ellipse 40% 30% at 80% 80%, rgba(124,58,237,0.07), transparent);
+      radial-gradient(ellipse 60% 40% at 20% 0%, rgba(99,102,241,0.07), transparent),
+      radial-gradient(ellipse 50% 40% at 80% 100%, rgba(139,92,246,0.06), transparent),
+      radial-gradient(ellipse 40% 30% at 50% 50%, rgba(99,102,241,0.03), transparent);
   }
 
   header {
@@ -36,75 +43,100 @@
     align-items: center;
     gap: 1rem;
     margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    box-shadow: 0 0 20px var(--accent-glow), 0 2px 8px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .logo-mark::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
   }
   .logo-dot {
-    width: 10px; height: 10px;
-    background: var(--accent);
+    width: 8px; height: 8px;
+    background: white;
     border-radius: 50%;
-    box-shadow: 0 0 12px var(--accent);
-    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 6px rgba(255,255,255,0.8);
+    animation: pulse 2.5s ease-in-out infinite;
   }
   @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 8px var(--accent); }
-    50% { box-shadow: 0 0 20px var(--accent), 0 0 40px rgba(0,229,160,0.3); }
+    0%, 100% { opacity: 0.9; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px rgba(255,255,255,0.9); }
   }
   h1 {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 1.1rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    color: var(--accent);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text);
     text-transform: uppercase;
   }
+  h1 span { color: var(--accent); }
   .tag {
     margin-left: auto;
-    background: rgba(0,229,160,0.08);
-    border: 1px solid rgba(0,229,160,0.2);
+    background: var(--accent-soft);
+    border: 1px solid rgba(99,102,241,0.3);
     color: var(--accent);
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.65rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 3px;
-    letter-spacing: 0.1em;
+    font-size: 0.6rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(99,102,241,0.1);
   }
 
   /* TABS */
   .tab-bar {
     display: flex;
-    gap: 0;
-    margin: 1.5rem 0 1.5rem;
-    border-bottom: 1px solid var(--border);
+    gap: 0.25rem;
+    margin: 2rem 0 1.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.3rem;
+    width: fit-content;
   }
   .tab-btn {
     background: none;
     border: none;
-    border-bottom: 2px solid transparent;
+    border-radius: 7px;
     color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    padding: 0.6rem 1.4rem;
+    padding: 0.5rem 1.2rem;
     cursor: pointer;
-    margin-bottom: -1px;
-    transition: all 0.15s;
-    position: relative;
+    transition: all 0.2s;
   }
-  .tab-btn:hover { color: var(--text); }
+  .tab-btn:hover { color: var(--text2); background: var(--surface2); }
   .tab-btn.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
+    color: var(--text);
+    background: var(--surface2);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
   }
   .tab-badge {
     display: inline-block;
     background: var(--accent);
-    color: #050a07;
+    color: white;
     font-size: 0.55rem;
     font-weight: 700;
     border-radius: 20px;
     padding: 0.1rem 0.4rem;
-    margin-left: 0.4rem;
+    margin-left: 0.35rem;
     vertical-align: middle;
+    box-shadow: 0 0 8px var(--accent-glow);
   }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
@@ -112,70 +144,79 @@
   /* SCHEDULER LAYOUT */
   .layout {
     display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 1.5rem;
-    max-width: 1100px;
+    grid-template-columns: 1fr 390px;
+    gap: 1.25rem;
+    max-width: 1120px;
   }
   .card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-radius: 16px;
+    padding: 1.6rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.02);
   }
   .card-label {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
     color: var(--muted);
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 0.5rem;
   }
-  .field { margin-bottom: 1rem; }
+  .card-label::before {
+    content: '';
+    display: inline-block; width: 16px; height: 1px;
+    background: var(--border2);
+  }
+  .field { margin-bottom: 1.1rem; }
   label {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 0.06em;
+    color: var(--text2);
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.45rem;
   }
   input, select {
     width: 100%;
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border: 1px solid var(--border2);
+    border-radius: 10px;
     color: var(--text);
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.9rem;
-    padding: 0.65rem 0.9rem;
+    font-size: 0.88rem;
+    padding: 0.7rem 1rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
     appearance: none;
   }
   input:focus, select:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,229,160,0.08);
+    box-shadow: 0 0 0 3px var(--accent-soft), 0 0 12px rgba(99,102,241,0.08);
   }
-  select option { background: #1a1a28; }
+  select option { background: #12121f; }
   .platform-toggle { display: flex; gap: 0.5rem; }
   .platform-btn {
     flex: 1;
-    padding: 0.6rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 0.65rem;
+    border: 1px solid var(--border2);
+    border-radius: 10px;
     background: var(--surface);
     color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s;
   }
   .platform-btn.active {
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(0,229,160,0.08);
+    background: var(--accent-soft);
+    box-shadow: 0 0 12px rgba(99,102,241,0.12);
   }
   .timer-section {
     margin-top: 1.5rem;
@@ -185,71 +226,75 @@
   .timer-inputs { display: flex; gap: 0.5rem; align-items: flex-end; }
   .timer-unit { flex: 1; text-align: center; }
   .timer-unit label { text-align: center; }
-  .timer-unit input { text-align: center; font-size: 1.4rem; font-weight: 600; padding: 0.6rem; }
-  .timer-colon { font-size: 1.6rem; color: var(--muted); padding-bottom: 0.5rem; font-family: 'IBM Plex Mono', monospace; }
+  .timer-unit input { text-align: center; font-size: 1.5rem; font-weight: 700; padding: 0.65rem; letter-spacing: -0.02em; }
+  .timer-colon { font-size: 1.8rem; color: var(--border2); padding-bottom: 0.5rem; font-family: 'IBM Plex Mono', monospace; font-weight: 700; }
 
   /* Clock */
-  .clock-display { text-align: center; padding: 2rem 0 1.5rem; }
-  .clock-ring { position: relative; width: 160px; height: 160px; margin: 0 auto 1.2rem; }
+  .clock-display { text-align: center; padding: 1.75rem 0 1.25rem; }
+  .clock-ring { position: relative; width: 170px; height: 170px; margin: 0 auto 1rem; }
   .clock-ring svg { transform: rotate(-90deg); }
-  .clock-ring .track { fill: none; stroke: var(--border); stroke-width: 6; }
+  .clock-ring .track { fill: none; stroke: var(--border2); stroke-width: 5; }
   .clock-ring .progress {
-    fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round;
+    fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round;
     stroke-dasharray: 408; stroke-dashoffset: 0;
     transition: stroke-dashoffset 1s linear;
-    filter: drop-shadow(0 0 6px var(--accent));
+    filter: drop-shadow(0 0 8px var(--accent));
   }
-  .clock-ring .progress.danger { stroke: var(--danger); filter: drop-shadow(0 0 6px var(--danger)); }
+  .clock-ring .progress.danger { stroke: var(--danger); filter: drop-shadow(0 0 8px var(--danger)); }
   .clock-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .clock-time { font-family: 'IBM Plex Mono', monospace; font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1; }
-  .clock-status { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 0.3rem; }
+  .clock-time { font-family: 'IBM Plex Mono', monospace; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+  .clock-status { font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; }
 
   /* Queue (right panel) */
   .queue-item {
     display: flex; align-items: center; gap: 0.8rem;
-    padding: 0.75rem 1rem;
+    padding: 0.8rem 1rem;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     margin-bottom: 0.5rem;
     position: relative; overflow: hidden;
+    transition: border-color 0.2s;
   }
-  .queue-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+  .queue-item:hover { border-color: var(--border2); }
+  .queue-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); border-radius: 0 2px 2px 0; }
   .queue-item.firing::before { background: var(--warn); animation: blink 0.4s ease infinite; }
-  .queue-item.done::before { background: var(--muted); }
+  .queue-item.done::before { background: var(--success); }
   .queue-item.failed::before { background: var(--danger); }
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
   .qi-info { flex: 1; min-width: 0; }
-  .qi-game { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .qi-event { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .qi-tmpl { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--accent); }
-  .qi-timer { font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; font-weight: 600; min-width: 60px; text-align: right; }
-  .qi-remove { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0.2rem 0.3rem; border-radius: 4px; transition: color 0.15s; }
-  .qi-remove:hover { color: var(--danger); }
-  .qi-status { font-size: 0.65rem; letter-spacing: 0.08em; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
-  .qi-status.firing { background: rgba(245,158,11,0.15); color: var(--warn); }
-  .qi-status.done { background: rgba(0,229,160,0.1); color: var(--accent); }
-  .qi-status.failed { background: rgba(255,77,109,0.1); color: var(--danger); }
-  .qi-status.pending { background: rgba(124,58,237,0.1); color: #a78bfa; }
+  .qi-game { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.15rem; }
+  .qi-event { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+  .qi-tmpl { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--accent); margin-top: 0.1rem; opacity: 0.8; }
+  .qi-timer { font-family: 'IBM Plex Mono', monospace; font-size: 1.05rem; font-weight: 700; min-width: 60px; text-align: right; color: var(--text2); }
+  .qi-remove { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0.25rem 0.35rem; border-radius: 6px; transition: all 0.15s; }
+  .qi-remove:hover { color: var(--danger); background: rgba(244,63,94,0.1); }
+  .qi-status { font-size: 0.6rem; letter-spacing: 0.08em; padding: 0.2rem 0.55rem; border-radius: 20px; font-weight: 700; text-transform: uppercase; }
+  .qi-status.firing { background: rgba(245,158,11,0.12); color: var(--warn); }
+  .qi-status.done { background: rgba(16,185,129,0.12); color: var(--success); }
+  .qi-status.failed { background: rgba(244,63,94,0.12); color: var(--danger); }
+  .qi-status.pending { background: rgba(99,102,241,0.12); color: #818cf8; }
 
   /* Buttons */
   .btn-primary {
-    width: 100%; padding: 0.85rem;
-    background: var(--accent); color: #050a07;
-    border: none; border-radius: 10px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.15s; margin-top: 1rem;
+    width: 100%; padding: 0.9rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none; border-radius: 12px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s; margin-top: 1.25rem;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.25), 0 1px 0 rgba(255,255,255,0.06) inset;
   }
-  .btn-primary:hover { background: #00ffa6; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,229,160,0.3); }
-  .btn-primary:active { transform: translateY(0); }
-  .btn-primary:disabled { background: var(--muted); color: var(--bg); cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(99,102,241,0.4), 0 1px 0 rgba(255,255,255,0.06) inset; }
+  .btn-primary:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(99,102,241,0.2); }
+  .btn-primary:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; transform: none; box-shadow: none; }
   .btn-secondary {
     width: 100%; padding: 0.65rem;
-    background: transparent; color: var(--muted);
-    border: 1px solid var(--border); border-radius: 8px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem;
-    letter-spacing: 0.08em; cursor: pointer; transition: all 0.15s; margin-top: 0.5rem;
+    background: transparent; color: var(--text2);
+    border: 1px solid var(--border2); border-radius: 10px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; margin-top: 0.5rem;
   }
   .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
 
@@ -375,6 +420,18 @@
   .tc-countdown.danger { color: var(--danger); }
   .tc-countdown.done   { color: var(--muted); font-size: 1rem; }
 
+  .tc-device {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent);
+    margin-top: 0.25rem;
+    opacity: 0.75;
+  }
+  .af-group-afid {
+    font-size: 0.75em;
+    color: var(--muted);
+    font-weight: 400;
+  }
   .tc-af-id {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.62rem;
@@ -497,14 +554,92 @@
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ===== LOGIN ===== */
+  #login-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 60% 40% at 20% 0%, rgba(99,102,241,0.09), transparent),
+      radial-gradient(ellipse 50% 40% at 80% 100%, rgba(139,92,246,0.07), transparent);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+  }
+  #login-screen.hidden { display: none; }
+  .login-box {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 20px; padding: 2.5rem 2.25rem;
+    width: 100%; max-width: 380px;
+    display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02) inset;
+  }
+  .login-logo { display: flex; align-items: center; gap: 0.75rem; }
+  .login-logo h2 { font-size: 1rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); }
+  .login-subtitle { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+  .login-input {
+    width: 100%; background: var(--surface);
+    border: 1px solid var(--border2); border-radius: 12px;
+    padding: 0.9rem 1.1rem; color: var(--text);
+    font-family: 'IBM Plex Mono', monospace; font-size: 1.2rem;
+    text-align: center; letter-spacing: 0.25em; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .login-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .login-input.error { border-color: var(--danger); animation: shake 0.35s ease; box-shadow: 0 0 0 3px rgba(244,63,94,0.12); }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
+  .login-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border: none; border-radius: 12px; padding: 0.9rem;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.3);
+  }
+  .login-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(99,102,241,0.45); }
+  .login-error { color: var(--danger); font-size: 0.78rem; min-height: 1em; letter-spacing: 0.03em; }
+  .user-badge {
+    position: fixed; top: 1.4rem; right: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 20px; padding: 0.4rem 1rem;
+    font-size: 0.72rem; color: var(--text2); letter-spacing: 0.06em;
+    display: flex; align-items: center; gap: 0.5rem;
+    cursor: pointer; transition: all 0.2s; z-index: 100;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+  }
+  .user-badge:hover { border-color: var(--accent); color: var(--text); background: var(--surface2); }
+  .user-badge span { color: var(--accent); font-weight: 700; }
 </style>
 </head>
 <body>
 
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-mark"><div class="logo-dot"></div></div>
+      <h2>AppsFlyer Scheduler</h2>
+    </div>
+    <div class="login-subtitle">Enter your passcode</div>
+    <input class="login-input" id="login-input" type="password" placeholder="••••••" autocomplete="off"
+      onkeydown="if(event.key==='Enter') doLogin()">
+    <button class="login-btn" onclick="doLogin()">Access</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- User badge shown after login -->
+<div class="user-badge hidden" id="user-badge" onclick="doLogout()">
+  Logged in as <span id="user-badge-name"></span> &nbsp;·&nbsp; logout
+</div>
+
+
 <header>
-  <div class="logo-dot"></div>
-  <h1>AppsFlyer S2S Scheduler</h1>
-  <span class="tag">S2S EVENT FIRE</span>
+  <div class="logo-mark"><div class="logo-dot"></div></div>
+  <h1>AppsFlyer <span>S2S</span> Scheduler</h1>
+  <span class="tag">S2S Event Fire</span>
 </header>
 
 <div class="tab-bar">
@@ -524,8 +659,9 @@
           <div class="hint">From AF dashboard or device</div>
         </div>
         <div class="field">
-          <label>Customer User ID</label>
-          <input id="customer_id" type="text" placeholder="optional override">
+          <label>Device Name</label>
+          <input id="device_name" type="text" placeholder="e.g. iPhone Anton">
+          <div class="hint">Shown in timers view</div>
         </div>
       </div>
       <div class="field">
@@ -1369,18 +1505,36 @@ let nextId = 1;
 let timerFilter = 'all';
 let activeTab = 'scheduler';
 
-window.onload = async () => {
+async function initApp() {
   const sel = document.getElementById('game_select');
-  Object.keys(GAMES).forEach(name => {
-    const o = document.createElement('option');
-    o.value = name; o.textContent = name;
-    sel.appendChild(o);
-  });
+  if (!sel.children.length) {
+    Object.keys(GAMES).forEach(name => {
+      const o = document.createElement('option');
+      o.value = name; o.textContent = name;
+      sel.appendChild(o);
+    });
+    setInterval(tickAll, 1000);
+    setInterval(renderTimersTab, 500);
+    setInterval(updateClock, 200);
+    setInterval(syncQueue, 5000);
+  }
+  queue = []; nextId = 1;
   await loadQueue();
-  setInterval(tickAll, 1000);
-  setInterval(renderTimersTab, 500);
-  setInterval(updateClock, 200);
-  setInterval(syncQueue, 5000);
+}
+
+window.onload = () => {
+  // Check if already logged in this session
+  const saved = sessionStorage.getItem('af_user');
+  if (saved && USERS[saved]) {
+    currentUser = saved.charAt(0).toUpperCase() + saved.slice(1);
+    dbKey = USERS[saved];
+    document.getElementById('login-screen').classList.add('hidden');
+    const badge = document.getElementById('user-badge');
+    badge.classList.remove('hidden');
+    document.getElementById('user-badge-name').textContent = currentUser;
+    initApp();
+  }
+  // else: login screen stays visible
 };
 
 // ===== TABS =====
@@ -1432,7 +1586,7 @@ function showEventPreview() {
 
 function getFormValues() {
   const af_id = document.getElementById('af_id').value.trim();
-  const customer_id = document.getElementById('customer_id').value.trim();
+  const device_name = document.getElementById('device_name').value.trim();
   const gameName = document.getElementById('game_select').value;
   const evIdx = document.getElementById('event_select').value;
   const hours = parseInt(document.getElementById('t_hours').value) || 0;
@@ -1441,16 +1595,62 @@ function getFormValues() {
   if (!af_id)    { alert('Enter an AppsFlyer ID'); return null; }
   if (!gameName) { alert('Select a game'); return null; }
   if (evIdx === '') { alert('Select an event'); return null; }
-  return { af_id, customer_id, gameName, game: GAMES[gameName], event: GAMES[gameName].events[evIdx], totalSecs: hours*3600+mins*60+secs };
+  return { af_id, device_name, gameName, game: GAMES[gameName], event: GAMES[gameName].events[evIdx], totalSecs: hours*3600+mins*60+secs };
 }
 
 // ===== DATABASE SYNC (Upstash direct) =====
 const UPSTASH_URL = "https://wealthy-unicorn-140681.upstash.io";
 const UPSTASH_TOKEN = "gQAAAAAAAiWJAAIgcDE1YjI0NTBkYTI5NmU0MmRiYTg3OTM5MmVmNjQ3ODExZQ";
 
+// ===== LOGIN =====
+const USERS = {
+  "anton": "scheduler_queue_anton",
+  "fano":  "scheduler_queue_fano"
+};
+
+let currentUser = null;
+let dbKey = null;
+
+function doLogin() {
+  const input = document.getElementById('login-input');
+  const errorEl = document.getElementById('login-error');
+  const pass = input.value.trim().toLowerCase();
+
+  if (USERS[pass]) {
+    currentUser = pass.charAt(0).toUpperCase() + pass.slice(1);
+    dbKey = USERS[pass];
+    sessionStorage.setItem('af_user', pass);
+    document.getElementById('login-screen').classList.add('hidden');
+    const badge = document.getElementById('user-badge');
+    badge.classList.remove('hidden');
+    document.getElementById('user-badge-name').textContent = currentUser;
+    errorEl.textContent = '';
+    initApp();
+  } else {
+    errorEl.textContent = 'Wrong passcode. Try again.';
+    input.classList.add('error');
+    input.value = '';
+    setTimeout(() => input.classList.remove('error'), 500);
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('af_user');
+  currentUser = null;
+  dbKey = null;
+  queue = [];
+  nextId = 1;
+  renderQueue();
+  updateBadge();
+  document.getElementById('user-badge').classList.add('hidden');
+  document.getElementById('login-input').value = '';
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('login-screen').classList.remove('hidden');
+}
+
 async function saveQueue() {
   try {
-    const r = await fetch(`${UPSTASH_URL}/set/scheduler_queue`, {
+    const r = await fetch(`${UPSTASH_URL}/set/${dbKey}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(JSON.stringify(queue))
@@ -1462,7 +1662,7 @@ async function saveQueue() {
 
 async function loadQueue() {
   try {
-    const r = await fetch(`${UPSTASH_URL}/get/scheduler_queue`, {
+    const r = await fetch(`${UPSTASH_URL}/get/${dbKey}`, {
       headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
     });
     const data = await r.json();
@@ -1483,7 +1683,7 @@ async function loadQueue() {
 
 async function syncQueue() {
   try {
-    const r = await fetch(`${UPSTASH_URL}/get/scheduler_queue`, {
+    const r = await fetch(`${UPSTASH_URL}/get/${dbKey}`, {
       headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
     });
     const data = await r.json();
@@ -1510,7 +1710,7 @@ function scheduleEvent() {
   const item = {
     id: nextId++,
     af_id: v.af_id,
-    customer_id: v.customer_id,
+    device_name: v.device_name,
     gameName: v.gameName,
     game: v.game,
     event: v.event,
@@ -1528,7 +1728,7 @@ function scheduleEvent() {
 function fireNow() {
   const v = getFormValues();
   if (!v) return;
-  doFire(v.af_id, v.customer_id, v.game, v.event, v.gameName, null);
+  doFire(v.af_id, v.device_name, v.game, v.event, v.gameName, null);
 }
 
 // ===== TICK =====
@@ -1538,19 +1738,19 @@ function tickAll() {
     if (item.status !== 'pending') return;
     if (now >= item.fireAt) {
       item.status = 'firing';
-      doFire(item.af_id, item.customer_id, item.game, item.event, item.gameName, item);
+      doFire(item.af_id, item.device_name, item.game, item.event, item.gameName, item);
     }
   });
   renderQueue();
   updateBadge();
 }
 
-async function doFire(af_id, customer_id, game, event, gameName, queueItem) {
+async function doFire(af_id, device_name, game, event, gameName, queueItem) {
   const appId = platform === 'ios' ? game.ios : game.pkg;
   const now = new Date().toISOString().replace('T',' ').replace('Z','').slice(0,23);
   const payload = {
     appsflyer_id: af_id,
-    customer_user_id: customer_id || "",
+    customer_user_id: device_name || "",
     eventName: event.tmpl,
     eventCurrency: "USD",
     eventValue: Object.keys(event.value).length ? JSON.stringify(event.value) : "",
@@ -1593,8 +1793,8 @@ function renderQueue() {
     <div class="queue-item ${item.status}">
       <div class="qi-info">
         <div class="qi-game">${item.gameName}</div>
-        <div class="qi-event">${item.event.name}</div>
-        <div class="qi-tmpl">${item.event.tmpl}</div>
+        <div class="qi-event">${item.device_name ? item.device_name + ' <span style="opacity:0.5;font-size:0.75em">('+item.af_id+')</span>' : item.af_id}</div>
+        <div class="qi-tmpl">${item.event.name} · ${item.event.tmpl}</div>
       </div>
       <span class="qi-status ${item.status}">${item.status}</span>
       ${item.status === 'pending' ? `<div class="qi-timer">${fmtSecs(Math.max(0, Math.ceil((item.fireAt - Date.now()) / 1000)))}</div>` : ''}
@@ -1632,6 +1832,7 @@ function timerCardHTML(item) {
           <div class="tc-game">${item.gameName}</div>
           <div class="tc-event">${item.event.name}</div>
           <div class="tc-tmpl">${item.event.tmpl}</div>
+          <div class="tc-device">${item.device_name || item.af_id}</div>
         </div>
         <span class="tc-status-badge ${item.status}">${item.status}</span>
       </div>
@@ -1658,8 +1859,9 @@ function renderTimersTab() {
   // Group by af_id, preserving insertion order
   const groups = {};
   filtered.forEach(item => {
-    if (!groups[item.af_id]) groups[item.af_id] = [];
-    groups[item.af_id].push(item);
+    const key = item.af_id;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
   });
 
   container.innerHTML = Object.entries(groups).map(([afId, items]) => {
@@ -1678,7 +1880,7 @@ function renderTimersTab() {
         <div class="af-group-header">
           <div class="af-group-dot"></div>
           <div>
-            <div class="af-group-id">${afId}</div>
+            <div class="af-group-id">${items[0].device_name ? items[0].device_name + ' <span class="af-group-afid">('+afId+')</span>' : afId}</div>
             <div class="af-group-meta">${items.length} event${items.length !== 1 ? 's' : ''}</div>
           </div>
           <div class="af-group-counts">${pills}</div>
