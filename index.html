@@ -647,6 +647,78 @@
   .upcoming-device { font-size: 0.65rem; color: var(--accent); font-family: 'IBM Plex Mono', monospace; }
   .upcoming-empty { color: var(--muted); font-size: 0.78rem; font-family: 'IBM Plex Mono', monospace; padding: 1rem 0; text-align: center; }
 
+  /* ===== MENU ===== */
+  #menu-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 60% 40% at 20% 0%, rgba(99,102,241,0.07), transparent),
+      radial-gradient(ellipse 50% 40% at 80% 100%, rgba(139,92,246,0.06), transparent);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 9000; gap: 0.5rem;
+    padding: 2rem;
+  }
+  #menu-screen.hidden { display: none; }
+  .menu-greeting {
+    font-size: 1.6rem; font-weight: 700;
+    color: var(--text); margin-bottom: 0.25rem;
+  }
+  .menu-subtitle {
+    font-size: 0.85rem; color: var(--muted);
+    letter-spacing: 0.06em; margin-bottom: 2.5rem;
+  }
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 280px);
+    gap: 1.25rem;
+  }
+  .menu-card {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 1.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; flex-direction: column; gap: 0.6rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    position: relative; overflow: hidden;
+  }
+  .menu-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(99,102,241,0.2);
+  }
+  .menu-card-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700; font-size: 0.9rem;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    margin-bottom: 0.4rem;
+  }
+  .menu-card-title {
+    font-size: 1.1rem; font-weight: 700; color: var(--text);
+  }
+  .menu-card-desc {
+    font-size: 0.78rem; color: var(--muted); flex: 1;
+  }
+  .menu-card-arrow {
+    font-size: 1rem; color: var(--accent); font-weight: 700;
+    align-self: flex-end;
+  }
+  .menu-card-soon {
+    font-size: 0.65rem; color: var(--muted);
+    background: var(--surface2); border-radius: 20px;
+    padding: 0.2rem 0.6rem; letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  @media (max-width: 960px) {
+    .menu-grid { grid-template-columns: 1fr; max-width: 340px; }
+  }
+
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -727,12 +799,44 @@
 </div>
 
 <!-- User badge shown after login -->
-<div class="user-badge hidden" id="user-badge" onclick="doLogout()">
-  Logged in as <span id="user-badge-name"></span> &nbsp;·&nbsp; logout
+<div class="user-badge hidden" id="user-badge">
+  <span id="user-badge-name"></span> &nbsp;·&nbsp;
+  <span onclick="showMenu()" style="cursor:pointer;opacity:0.7" title="Home">⌂</span>
+  &nbsp;·&nbsp;
+  <span onclick="doLogout()" style="cursor:pointer;opacity:0.7">logout</span>
+</div>
+
+<!-- ===== MENU SCREEN ===== -->
+<div id="menu-screen" class="hidden">
+  <div class="menu-greeting" id="menu-greeting">Welcome back</div>
+  <div class="menu-subtitle">Choose a tool to get started</div>
+  <div class="menu-grid">
+    <div class="menu-card" onclick="showApp('appsflyer')">
+      <div class="menu-card-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">AF</div>
+      <div class="menu-card-title">AppsFlyer</div>
+      <div class="menu-card-desc">S2S event scheduler &amp; timer</div>
+      <div class="menu-card-arrow">→</div>
+    </div>
+    <div class="menu-card" onclick="showApp('adjust')">
+      <div class="menu-card-icon" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)">AD</div>
+      <div class="menu-card-title">Adjust</div>
+      <div class="menu-card-desc">Coming soon</div>
+      <div class="menu-card-arrow menu-card-soon">Soon</div>
+    </div>
+    <div class="menu-card" onclick="showApp('primeearn')">
+      <div class="menu-card-icon" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">PE</div>
+      <div class="menu-card-title">Prime Earn</div>
+      <div class="menu-card-desc">Coming soon</div>
+      <div class="menu-card-arrow menu-card-soon">Soon</div>
+    </div>
+  </div>
 </div>
 
 
+<!-- ===== MAIN APP ===== -->
+<div id="app-screen" class="hidden">
 <header>
+  <button onclick="showMenu()" style="background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:0.35rem 0.75rem;font-size:0.75rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:0.05em;transition:all 0.2s;margin-right:0.5rem" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">← Back</button>
   <div class="logo-mark"><div class="logo-dot"></div></div>
   <h1>AppsFlyer <span>S2S</span> Scheduler</h1>
   <span class="tag">S2S Event Fire</span>
@@ -862,6 +966,90 @@
     </div>
   </div>
 </div>
+
+</div><!-- end app-screen -->
+
+<!-- ===== ADJUST SCREEN ===== -->
+<div id="adjust-screen" class="hidden">
+<header>
+  <button onclick="showMenu()" style="background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:0.35rem 0.75rem;font-size:0.75rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:0.05em;transition:all 0.2s;margin-right:0.5rem" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">← Back</button>
+  <div class="logo-mark" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)"><div class="logo-dot"></div></div>
+  <h1>Adjust <span>S2S</span> Manual</h1>
+  <span class="tag" style="border-color:rgba(14,165,233,0.3);color:#38bdf8;background:rgba(14,165,233,0.08)">S2S Event Fire</span>
+</header>
+
+<div class="layout" style="margin-top:1.75rem">
+  <div class="card">
+    <div class="card-label">// Event Configuration</div>
+    <div class="field">
+      <label>App Token</label>
+      <input id="adj_app_token" type="text" placeholder="abc123xyz">
+      <div class="hint">From Adjust dashboard</div>
+    </div>
+    <div class="field">
+      <label>Event Token</label>
+      <input id="adj_event_token" type="text" placeholder="abc123">
+    </div>
+    <div class="field">
+      <label>Device ID</label>
+      <input id="adj_device_id" type="text" placeholder="IDFA / GAID">
+    </div>
+    <div class="field">
+      <label>Platform</label>
+      <div class="platform-toggle">
+        <button class="platform-btn active" id="adj_btn_ios" onclick="adjSetPlatform('ios')">iOS</button>
+        <button class="platform-btn" id="adj_btn_android" onclick="adjSetPlatform('android')">Android</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>S2S Mode</label>
+      <div class="platform-toggle">
+        <button class="platform-btn active" id="adj_btn_s2s_on" onclick="adjSetS2S(true)">S2S On</button>
+        <button class="platform-btn" id="adj_btn_s2s_off" onclick="adjSetS2S(false)">S2S Off</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="timer-section">
+      <div class="card-label">// Delay Timer</div>
+      <div class="timer-inputs">
+        <div class="timer-unit">
+          <label>Hours</label>
+          <input id="adj_hours" type="number" min="0" value="0">
+        </div>
+        <div class="timer-colon">:</div>
+        <div class="timer-unit">
+          <label>Minutes</label>
+          <input id="adj_mins" type="number" min="0" max="59" value="0">
+        </div>
+        <div class="timer-colon">:</div>
+        <div class="timer-unit">
+          <label>Seconds</label>
+          <input id="adj_secs" type="number" min="0" max="59" value="30">
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);box-shadow:0 4px 16px rgba(14,165,233,0.25)" onclick="adjCreditNow()">⚡ Credit Now</button>
+    <button class="btn-secondary" onclick="adjSchedule()">⏱ Schedule</button>
+  </div>
+
+  <div class="right-panel">
+    <div class="card">
+      <div class="card-label">// Event Log</div>
+      <div class="log-box" id="adj_log_box">
+        <div class="log-line info">— ready —</div>
+      </div>
+      <button class="btn-secondary" onclick="adjClearLog()">clear log</button>
+    </div>
+
+    <div class="card" style="flex:1">
+      <div class="card-label">// Scheduled Jobs</div>
+      <div id="adj_jobs_list"><div class="empty-queue">no jobs scheduled</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+
 
 <script>
 const GAMES = {
@@ -1637,18 +1825,15 @@ async function initApp() {
 }
 
 window.onload = () => {
-  // Check if already logged in this session
   const saved = sessionStorage.getItem('af_user');
   if (saved && USERS[saved]) {
     currentUser = saved.charAt(0).toUpperCase() + saved.slice(1);
     dbKey = USERS[saved];
     document.getElementById('login-screen').classList.add('hidden');
-    const badge = document.getElementById('user-badge');
-    badge.classList.remove('hidden');
+    document.getElementById('user-badge').classList.remove('hidden');
     document.getElementById('user-badge-name').textContent = currentUser;
-    initApp();
+    showMenu();
   }
-  // else: login screen stays visible
 };
 
 // ===== TABS =====
@@ -1739,7 +1924,7 @@ function doLogin() {
     badge.classList.remove('hidden');
     document.getElementById('user-badge-name').textContent = currentUser;
     errorEl.textContent = '';
-    initApp();
+    showMenu();
   } else {
     errorEl.textContent = 'Wrong passcode. Try again.';
     input.classList.add('error');
@@ -1747,6 +1932,30 @@ function doLogin() {
     setTimeout(() => input.classList.remove('error'), 500);
   }
 }
+
+function showMenu() {
+  document.getElementById('app-screen').classList.add('hidden');
+  document.getElementById('menu-screen').classList.remove('hidden');
+  document.getElementById('menu-greeting').textContent = 'Welcome back, ' + currentUser;
+}
+
+function showApp(app) {
+  document.getElementById('menu-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.add('hidden');
+  document.getElementById('adjust-screen').classList.add('hidden');
+  if (app === 'appsflyer') {
+    document.getElementById('app-screen').classList.remove('hidden');
+    initApp();
+  } else if (app === 'adjust') {
+    document.getElementById('adjust-screen').classList.remove('hidden');
+    adjInitJobs();
+  } else {
+    document.getElementById('menu-screen').classList.remove('hidden');
+  }
+}
+
+// Also update showMenu to hide adjust
+const _origShowMenu = showMenu;
 
 function doLogout() {
   sessionStorage.removeItem('af_user');
@@ -2299,6 +2508,132 @@ function log(msg, type='info') {
 function clearLog() {
   document.getElementById('log_box').innerHTML = '<div class="log-line info">— cleared —</div>';
 }
+
+// ===== ADJUST =====
+let adjPlatform = 'ios';
+let adjS2S = true;
+let adjJobs = [];
+let adjNextId = 1;
+
+function adjSetPlatform(p) {
+  adjPlatform = p;
+  document.getElementById('adj_btn_ios').classList.toggle('active', p === 'ios');
+  document.getElementById('adj_btn_android').classList.toggle('active', p === 'android');
+}
+
+function adjSetS2S(v) {
+  adjS2S = v;
+  document.getElementById('adj_btn_s2s_on').classList.toggle('active', v);
+  document.getElementById('adj_btn_s2s_off').classList.toggle('active', !v);
+}
+
+function adjLog(msg, type = 'info') {
+  const box = document.getElementById('adj_log_box');
+  if (!box) return;
+  const line = document.createElement('div');
+  line.className = 'log-line ' + type;
+  line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+  box.insertBefore(line, box.firstChild);
+}
+
+function adjClearLog() {
+  const box = document.getElementById('adj_log_box');
+  if (box) box.innerHTML = '<div class="log-line info">— ready —</div>';
+}
+
+function adjGetData() {
+  return {
+    app_token: document.getElementById('adj_app_token').value.trim(),
+    event_token: document.getElementById('adj_event_token').value.trim(),
+    device_id: document.getElementById('adj_device_id').value.trim(),
+    is_ios: adjPlatform === 'ios',
+    use_s2s: adjS2S
+  };
+}
+
+async function adjFireNow(data) {
+  try {
+    adjLog('→ Firing | app: ' + data.app_token + ' | event: ' + data.event_token, 'warn');
+    const res = await fetch('/credit-now', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    adjLog('✓ Response: ' + JSON.stringify(json), 'success');
+  } catch(e) {
+    adjLog('✗ Error: ' + e.message, 'error');
+  }
+}
+
+function adjCreditNow() {
+  const data = adjGetData();
+  if (!data.app_token || !data.event_token || !data.device_id) {
+    adjLog('✗ Fill in App Token, Event Token and Device ID', 'error'); return;
+  }
+  adjFireNow(data);
+}
+
+function adjSchedule() {
+  const data = adjGetData();
+  if (!data.app_token || !data.event_token || !data.device_id) {
+    adjLog('✗ Fill in App Token, Event Token and Device ID', 'error'); return;
+  }
+  const h = parseInt(document.getElementById('adj_hours').value) || 0;
+  const m = parseInt(document.getElementById('adj_mins').value) || 0;
+  const s = parseInt(document.getElementById('adj_secs').value) || 0;
+  const totalSecs = h * 3600 + m * 60 + s;
+  if (totalSecs <= 0) { adjFireNow(data); return; }
+  const job = { id: adjNextId++, data, fireAt: Date.now() + totalSecs * 1000, totalSecs, status: 'pending' };
+  adjJobs.push(job);
+  adjLog('Scheduled: ' + data.event_token + ' in ' + fmtSecs(totalSecs), 'info');
+  adjRenderJobs();
+}
+
+function adjCancelJob(id) {
+  adjJobs = adjJobs.filter(j => j.id !== id);
+  adjRenderJobs();
+}
+
+function adjRenderJobs() {
+  const el = document.getElementById('adj_jobs_list');
+  if (!el) return;
+  const active = adjJobs.filter(j => j.status !== 'done');
+  if (!adjJobs.length) { el.innerHTML = '<div class="empty-queue">no jobs scheduled</div>'; return; }
+  el.innerHTML = adjJobs.map(j => {
+    const rem = Math.max(0, Math.ceil((j.fireAt - Date.now()) / 1000));
+    return `<div class="queue-item ${j.status}">
+      <div class="qi-info">
+        <div class="qi-game">${j.data.app_token}</div>
+        <div class="qi-event">${j.data.event_token}</div>
+        <div class="qi-tmpl">${j.data.device_id}</div>
+      </div>
+      <span class="qi-status ${j.status}">${j.status}</span>
+      ${j.status === 'pending' ? `<div class="qi-timer">${fmtSecs(rem)}</div>` : ''}
+      <button class="qi-remove" onclick="adjCancelJob(${j.id})">×</button>
+    </div>`;
+  }).join('');
+}
+
+function adjTickJobs() {
+  if (!document.getElementById('adjust-screen') || document.getElementById('adjust-screen').classList.contains('hidden')) return;
+  const now = Date.now();
+  adjJobs.forEach(j => {
+    if (j.status !== 'pending') return;
+    if (now >= j.fireAt) {
+      j.status = 'firing';
+      adjFireNow(j.data).then(() => { j.status = 'done'; adjRenderJobs(); });
+    }
+  });
+  adjRenderJobs();
+}
+
+function adjInitJobs() {
+  adjRenderJobs();
+}
+
+setInterval(adjTickJobs, 1000);
+
 </script>
 </body>
 </html>
