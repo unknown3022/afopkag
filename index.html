@@ -974,7 +974,7 @@
 <header>
   <button onclick="showMenu()" style="background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:0.35rem 0.75rem;font-size:0.75rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:0.05em;transition:all 0.2s;margin-right:0.5rem" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">← Back</button>
   <div class="logo-mark" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)"><div class="logo-dot"></div></div>
-  <h1>Adjust <span>S2S</span> Manual</h1>
+  <h1>Adjust <span style="color:#38bdf8">S2S</span> Manual</h1>
   <span class="tag" style="border-color:rgba(14,165,233,0.3);color:#38bdf8;background:rgba(14,165,233,0.08)">S2S Event Fire</span>
 </header>
 
@@ -983,72 +983,61 @@
     <div class="card-label">// Event Configuration</div>
     <div class="field">
       <label>App Token</label>
-      <input id="adj_app_token" type="text" placeholder="abc123xyz">
+      <input id="adj_app_token" type="text" placeholder="e.g. abc123xyz789">
       <div class="hint">From Adjust dashboard</div>
     </div>
     <div class="field">
       <label>Event Token</label>
-      <input id="adj_event_token" type="text" placeholder="abc123">
+      <input id="adj_event_token" type="text" placeholder="e.g. abc123">
     </div>
     <div class="field">
       <label>Device ID</label>
       <input id="adj_device_id" type="text" placeholder="IDFA / GAID">
     </div>
     <div class="field">
-      <label>Platform</label>
+      <label>Options</label>
       <div class="platform-toggle">
-        <button class="platform-btn active" id="adj_btn_ios" onclick="adjSetPlatform('ios')">iOS</button>
-        <button class="platform-btn" id="adj_btn_android" onclick="adjSetPlatform('android')">Android</button>
-      </div>
-    </div>
-    <div class="field">
-      <label>S2S Mode</label>
-      <div class="platform-toggle">
-        <button class="platform-btn active" id="adj_btn_s2s_on" onclick="adjSetS2S(true)">S2S On</button>
-        <button class="platform-btn" id="adj_btn_s2s_off" onclick="adjSetS2S(false)">S2S Off</button>
+        <button class="platform-btn active" id="adj_btn_ios" onclick="adjToggle('ios')">iOS</button>
+        <button class="platform-btn active" id="adj_btn_s2s" onclick="adjToggle('s2s')" style="border-color:var(--accent);color:var(--accent);background:var(--accent-soft)">S2S</button>
       </div>
     </div>
     <div class="divider"></div>
-    <div class="timer-section">
-      <div class="card-label">// Delay Timer</div>
-      <div class="timer-inputs">
-        <div class="timer-unit">
-          <label>Hours</label>
-          <input id="adj_hours" type="number" min="0" value="0">
-        </div>
-        <div class="timer-colon">:</div>
-        <div class="timer-unit">
-          <label>Minutes</label>
-          <input id="adj_mins" type="number" min="0" max="59" value="0">
-        </div>
-        <div class="timer-colon">:</div>
-        <div class="timer-unit">
-          <label>Seconds</label>
-          <input id="adj_secs" type="number" min="0" max="59" value="30">
-        </div>
+    <div class="card-label">// Delay Timer</div>
+    <div class="timer-inputs">
+      <div class="timer-unit">
+        <label>Hours</label>
+        <input id="adj_hours" type="number" min="0" value="0">
+      </div>
+      <div class="timer-colon">:</div>
+      <div class="timer-unit">
+        <label>Minutes</label>
+        <input id="adj_mins" type="number" min="0" max="59" value="0">
+      </div>
+      <div class="timer-colon">:</div>
+      <div class="timer-unit">
+        <label>Seconds</label>
+        <input id="adj_secs" type="number" min="0" max="59" value="30">
       </div>
     </div>
-    <button class="btn-primary" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);box-shadow:0 4px 16px rgba(14,165,233,0.25)" onclick="adjCreditNow()">⚡ Credit Now</button>
+    <button class="btn-primary" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);box-shadow:0 4px 16px rgba(14,165,233,0.25)" onclick="adjCreditNow()">🔥 Credit Now</button>
     <button class="btn-secondary" onclick="adjSchedule()">⏱ Schedule</button>
   </div>
 
   <div class="right-panel">
     <div class="card">
       <div class="card-label">// Event Log</div>
-      <div class="log-box" id="adj_log_box">
+      <div class="log-box" id="adj_log_box" style="height:160px">
         <div class="log-line info">— ready —</div>
       </div>
-      <button class="btn-secondary" onclick="adjClearLog()">clear log</button>
+      <button class="btn-secondary" onclick="document.getElementById('adj_log_box').innerHTML='<div class=\'log-line info\'>— ready —</div>'">clear log</button>
     </div>
-
     <div class="card" style="flex:1">
-      <div class="card-label">// Scheduled Jobs</div>
+      <div class="card-label">// Jobs</div>
       <div id="adj_jobs_list"><div class="empty-queue">no jobs scheduled</div></div>
     </div>
   </div>
 </div>
 </div>
-
 
 
 <script>
@@ -2510,24 +2499,25 @@ function clearLog() {
 }
 
 // ===== ADJUST =====
-let adjPlatform = 'ios';
+let adjIos = true;
 let adjS2S = true;
-let adjJobs = [];
-let adjNextId = 1;
+let adjLoggedJobs = new Set();
 
-function adjSetPlatform(p) {
-  adjPlatform = p;
-  document.getElementById('adj_btn_ios').classList.toggle('active', p === 'ios');
-  document.getElementById('adj_btn_android').classList.toggle('active', p === 'android');
+function adjToggle(which) {
+  if (which === 'ios') {
+    adjIos = !adjIos;
+    document.getElementById('adj_btn_ios').classList.toggle('active', adjIos);
+  } else {
+    adjS2S = !adjS2S;
+    const btn = document.getElementById('adj_btn_s2s');
+    btn.classList.toggle('active', adjS2S);
+    btn.style.borderColor = adjS2S ? 'var(--accent)' : '';
+    btn.style.color = adjS2S ? 'var(--accent)' : '';
+    btn.style.background = adjS2S ? 'var(--accent-soft)' : '';
+  }
 }
 
-function adjSetS2S(v) {
-  adjS2S = v;
-  document.getElementById('adj_btn_s2s_on').classList.toggle('active', v);
-  document.getElementById('adj_btn_s2s_off').classList.toggle('active', !v);
-}
-
-function adjLog(msg, type = 'info') {
+function adjAddLog(msg, type='info') {
   const box = document.getElementById('adj_log_box');
   if (!box) return;
   const line = document.createElement('div');
@@ -2536,103 +2526,91 @@ function adjLog(msg, type = 'info') {
   box.insertBefore(line, box.firstChild);
 }
 
-function adjClearLog() {
-  const box = document.getElementById('adj_log_box');
-  if (box) box.innerHTML = '<div class="log-line info">— ready —</div>';
-}
-
 function adjGetData() {
   return {
     app_token: document.getElementById('adj_app_token').value.trim(),
     event_token: document.getElementById('adj_event_token').value.trim(),
     device_id: document.getElementById('adj_device_id').value.trim(),
-    is_ios: adjPlatform === 'ios',
+    is_ios: adjIos,
     use_s2s: adjS2S
   };
 }
 
-async function adjFireNow(data) {
+async function adjCreditNow() {
+  const data = adjGetData();
+  if (!data.app_token || !data.event_token || !data.device_id) {
+    adjAddLog('✗ Fill in all fields', 'error'); return;
+  }
   try {
-    adjLog('→ Firing | app: ' + data.app_token + ' | event: ' + data.event_token, 'warn');
+    adjAddLog('→ Firing | ' + data.event_token, 'warn');
     const res = await fetch('/credit-now', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
     const json = await res.json();
-    adjLog('✓ Response: ' + JSON.stringify(json), 'success');
+    adjAddLog('✓ ' + JSON.stringify(json), 'success');
   } catch(e) {
-    adjLog('✗ Error: ' + e.message, 'error');
+    adjAddLog('✗ ' + e.message, 'error');
   }
 }
 
-function adjCreditNow() {
+async function adjSchedule() {
   const data = adjGetData();
   if (!data.app_token || !data.event_token || !data.device_id) {
-    adjLog('✗ Fill in App Token, Event Token and Device ID', 'error'); return;
-  }
-  adjFireNow(data);
-}
-
-function adjSchedule() {
-  const data = adjGetData();
-  if (!data.app_token || !data.event_token || !data.device_id) {
-    adjLog('✗ Fill in App Token, Event Token and Device ID', 'error'); return;
+    adjAddLog('✗ Fill in all fields', 'error'); return;
   }
   const h = parseInt(document.getElementById('adj_hours').value) || 0;
   const m = parseInt(document.getElementById('adj_mins').value) || 0;
   const s = parseInt(document.getElementById('adj_secs').value) || 0;
-  const totalSecs = h * 3600 + m * 60 + s;
-  if (totalSecs <= 0) { adjFireNow(data); return; }
-  const job = { id: adjNextId++, data, fireAt: Date.now() + totalSecs * 1000, totalSecs, status: 'pending' };
-  adjJobs.push(job);
-  adjLog('Scheduled: ' + data.event_token + ' in ' + fmtSecs(totalSecs), 'info');
-  adjRenderJobs();
+  try {
+    await fetch('/schedule', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...data, hours: h, minutes: m, seconds: s })
+    });
+    adjAddLog('Scheduled: ' + data.event_token + ' in ' + h + 'h ' + m + 'm ' + s + 's', 'info');
+  } catch(e) {
+    adjAddLog('✗ ' + e.message, 'error');
+  }
 }
 
-function adjCancelJob(id) {
-  adjJobs = adjJobs.filter(j => j.id !== id);
-  adjRenderJobs();
+async function adjCancelJob(id) {
+  await fetch('/cancel/' + id, { method: 'POST' });
 }
 
-function adjRenderJobs() {
-  const el = document.getElementById('adj_jobs_list');
-  if (!el) return;
-  const active = adjJobs.filter(j => j.status !== 'done');
-  if (!adjJobs.length) { el.innerHTML = '<div class="empty-queue">no jobs scheduled</div>'; return; }
-  el.innerHTML = adjJobs.map(j => {
-    const rem = Math.max(0, Math.ceil((j.fireAt - Date.now()) / 1000));
-    return `<div class="queue-item ${j.status}">
-      <div class="qi-info">
-        <div class="qi-game">${j.data.app_token}</div>
-        <div class="qi-event">${j.data.event_token}</div>
-        <div class="qi-tmpl">${j.data.device_id}</div>
-      </div>
-      <span class="qi-status ${j.status}">${j.status}</span>
-      ${j.status === 'pending' ? `<div class="qi-timer">${fmtSecs(rem)}</div>` : ''}
-      <button class="qi-remove" onclick="adjCancelJob(${j.id})">×</button>
-    </div>`;
-  }).join('');
+async function adjLoadJobs() {
+  if (document.getElementById('adjust-screen').classList.contains('hidden')) return;
+  try {
+    const res = await fetch('/jobs');
+    const jobs = await res.json();
+    const el = document.getElementById('adj_jobs_list');
+    if (!el) return;
+    if (!jobs.length) { el.innerHTML = '<div class="empty-queue">no jobs scheduled</div>'; return; }
+    el.innerHTML = jobs.map(j => {
+      const rem = j.done ? 0 : (j.remaining || 0);
+      const h = Math.floor(rem/3600), mn = Math.floor((rem%3600)/60), s = rem%60;
+      const timeStr = h+'h '+mn+'m '+s+'s';
+      return `<div class="queue-item ${j.done ? 'done' : 'pending'}">
+        <div class="qi-info">
+          <div class="qi-event">Job #${j.id}</div>
+          <div class="qi-tmpl">${j.done ? JSON.stringify(j.result||{}) : timeStr}</div>
+        </div>
+        <span class="qi-status ${j.done ? 'done' : 'pending'}">${j.done ? 'done' : 'pending'}</span>
+        ${!j.done ? `<button class="qi-remove" onclick="adjCancelJob(${j.id})">×</button>` : ''}
+      </div>`;
+    }).join('');
+    // log completed jobs once
+    jobs.forEach(j => {
+      if (j.done && j.result && !adjLoggedJobs.has(j.id)) {
+        adjAddLog('✓ Job #' + j.id + ': ' + JSON.stringify(j.result), 'success');
+        adjLoggedJobs.add(j.id);
+      }
+    });
+  } catch(e) {}
 }
 
-function adjTickJobs() {
-  if (!document.getElementById('adjust-screen') || document.getElementById('adjust-screen').classList.contains('hidden')) return;
-  const now = Date.now();
-  adjJobs.forEach(j => {
-    if (j.status !== 'pending') return;
-    if (now >= j.fireAt) {
-      j.status = 'firing';
-      adjFireNow(j.data).then(() => { j.status = 'done'; adjRenderJobs(); });
-    }
-  });
-  adjRenderJobs();
-}
-
-function adjInitJobs() {
-  adjRenderJobs();
-}
-
-setInterval(adjTickJobs, 1000);
+setInterval(adjLoadJobs, 1000);
 
 </script>
 </body>
