@@ -1680,7 +1680,7 @@ async function loadQueue() {
     if (typeof loaded === 'string') loaded = JSON.parse(loaded);
     console.log('is array:', Array.isArray(loaded), 'len:', loaded ? loaded.length : 0);
     // If Anton's DB is empty, restore from backup
-    if ((!Array.isArray(loaded) || loaded.length === 0) && dbKey === 'scheduler_queue') {
+    if ((!Array.isArray(loaded) || loaded.length === 0) && dbKey === 'scheduler_queue_anton') {
       loaded = ANTON_RESTORE;
       log('Restored ' + loaded.length + ' item(s) from backup', 'info');
     }
