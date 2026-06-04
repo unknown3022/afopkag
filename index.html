@@ -981,28 +981,36 @@
 <div class="layout" style="margin-top:1.75rem">
   <div class="card">
     <div class="card-label">// Event Configuration</div>
+
     <div class="field">
       <label>App Token</label>
-      <input id="adj_app_token" type="text" placeholder="e.g. abc123xyz789">
-      <div class="hint">From Adjust dashboard</div>
+      <input id="adj_app_token" type="text" placeholder="App Token">
     </div>
     <div class="field">
       <label>Event Token</label>
-      <input id="adj_event_token" type="text" placeholder="e.g. abc123">
+      <input id="adj_event_token" type="text" placeholder="Event Token">
     </div>
     <div class="field">
       <label>Device ID</label>
-      <input id="adj_device_id" type="text" placeholder="IDFA / GAID">
+      <input id="adj_device_id" type="text" placeholder="Device ID">
     </div>
+
     <div class="field">
-      <label>Options</label>
-      <div class="platform-toggle">
-        <button class="platform-btn active" id="adj_btn_ios" onclick="adjToggle('ios')">iOS</button>
-        <button class="platform-btn active" id="adj_btn_s2s" onclick="adjToggle('s2s')" style="border-color:var(--accent);color:var(--accent);background:var(--accent-soft)">S2S</button>
+      <div style="display:flex;gap:1rem;align-items:center;margin-top:0.25rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;text-transform:none;font-size:0.85rem;color:var(--text2);cursor:pointer">
+          <input type="checkbox" id="adj_ios" checked style="width:auto;accent-color:var(--accent)"> iOS
+        </label>
+        <label style="display:flex;align-items:center;gap:0.5rem;text-transform:none;font-size:0.85rem;color:var(--text2);cursor:pointer">
+          <input type="checkbox" id="adj_s2s" style="width:auto;accent-color:var(--accent)"> s2s
+        </label>
       </div>
     </div>
+
+    <button class="btn-primary" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);box-shadow:0 4px 16px rgba(14,165,233,0.25)" onclick="adjCreditNow()">🔥 Credit Now</button>
+
     <div class="divider"></div>
-    <div class="card-label">// Delay Timer</div>
+    <div class="card-label">// Schedule</div>
+
     <div class="timer-inputs">
       <div class="timer-unit">
         <label>Hours</label>
@@ -1016,29 +1024,25 @@
       <div class="timer-colon">:</div>
       <div class="timer-unit">
         <label>Seconds</label>
-        <input id="adj_secs" type="number" min="0" max="59" value="30">
+        <input id="adj_secs" type="number" min="0" max="59" value="0">
       </div>
     </div>
-    <button class="btn-primary" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);box-shadow:0 4px 16px rgba(14,165,233,0.25)" onclick="adjCreditNow()">🔥 Credit Now</button>
-    <button class="btn-secondary" onclick="adjSchedule()">⏱ Schedule</button>
+    <button class="btn-secondary" style="margin-top:0.75rem" onclick="adjSchedule()">Schedule</button>
   </div>
 
   <div class="right-panel">
-    <div class="card">
-      <div class="card-label">// Event Log</div>
-      <div class="log-box" id="adj_log_box" style="height:160px">
-        <div class="log-line info">— ready —</div>
-      </div>
-      <button class="btn-secondary" onclick="document.getElementById('adj_log_box').innerHTML='<div class=\'log-line info\'>— ready —</div>'">clear log</button>
-    </div>
     <div class="card" style="flex:1">
       <div class="card-label">// Jobs</div>
-      <div id="adj_jobs_list"><div class="empty-queue">no jobs scheduled</div></div>
+      <div id="adj_jobs_list"><div class="empty-queue">no jobs</div></div>
+    </div>
+    <div class="card">
+      <div class="card-label">// Logs</div>
+      <div class="log-box" id="adj_log_box" style="height:200px;font-size:0.68rem"></div>
+      <button class="btn-secondary" onclick="document.getElementById('adj_log_box').innerHTML=''">clear log</button>
     </div>
   </div>
 </div>
 </div>
-
 
 <script>
 const GAMES = {
@@ -2499,111 +2503,90 @@ function clearLog() {
 }
 
 // ===== ADJUST =====
-let adjIos = true;
-let adjS2S = true;
-let adjLoggedJobs = new Set();
+const adjLoggedJobs = new Set();
 
-function adjToggle(which) {
-  if (which === 'ios') {
-    adjIos = !adjIos;
-    document.getElementById('adj_btn_ios').classList.toggle('active', adjIos);
-  } else {
-    adjS2S = !adjS2S;
-    const btn = document.getElementById('adj_btn_s2s');
-    btn.classList.toggle('active', adjS2S);
-    btn.style.borderColor = adjS2S ? 'var(--accent)' : '';
-    btn.style.color = adjS2S ? 'var(--accent)' : '';
-    btn.style.background = adjS2S ? 'var(--accent-soft)' : '';
-  }
-}
-
-function adjAddLog(msg, type='info') {
+function adjAddLog(data) {
   const box = document.getElementById('adj_log_box');
   if (!box) return;
-  const line = document.createElement('div');
-  line.className = 'log-line ' + type;
-  line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
-  box.insertBefore(line, box.firstChild);
+  const pre = document.createElement('div');
+  pre.className = 'log-line info';
+  pre.style.whiteSpace = 'pre-wrap';
+  pre.style.fontSize = '0.68rem';
+  pre.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+  box.insertBefore(pre, box.firstChild);
 }
 
 function adjGetData() {
   return {
-    app_token: document.getElementById('adj_app_token').value.trim(),
-    event_token: document.getElementById('adj_event_token').value.trim(),
-    device_id: document.getElementById('adj_device_id').value.trim(),
-    is_ios: adjIos,
-    use_s2s: adjS2S
+    app_token: document.getElementById('adj_app_token').value,
+    event_token: document.getElementById('adj_event_token').value,
+    device_id: document.getElementById('adj_device_id').value,
+    is_ios: document.getElementById('adj_ios').checked,
+    use_s2s: document.getElementById('adj_s2s').checked
   };
 }
 
 async function adjCreditNow() {
-  const data = adjGetData();
-  if (!data.app_token || !data.event_token || !data.device_id) {
-    adjAddLog('✗ Fill in all fields', 'error'); return;
-  }
-  try {
-    adjAddLog('→ Firing | ' + data.event_token, 'warn');
-    const res = await fetch('/credit-now', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    const json = await res.json();
-    adjAddLog('✓ ' + JSON.stringify(json), 'success');
-  } catch(e) {
-    adjAddLog('✗ ' + e.message, 'error');
-  }
+  const res = await fetch('/credit-now', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(adjGetData())
+  });
+  const data = await res.json();
+  console.log(data);
+  adjAddLog(data);
 }
 
 async function adjSchedule() {
-  const data = adjGetData();
-  if (!data.app_token || !data.event_token || !data.device_id) {
-    adjAddLog('✗ Fill in all fields', 'error'); return;
-  }
-  const h = parseInt(document.getElementById('adj_hours').value) || 0;
-  const m = parseInt(document.getElementById('adj_mins').value) || 0;
-  const s = parseInt(document.getElementById('adj_secs').value) || 0;
-  try {
-    await fetch('/schedule', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, hours: h, minutes: m, seconds: s })
-    });
-    adjAddLog('Scheduled: ' + data.event_token + ' in ' + h + 'h ' + m + 'm ' + s + 's', 'info');
-  } catch(e) {
-    adjAddLog('✗ ' + e.message, 'error');
-  }
+  await fetch('/schedule', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...adjGetData(),
+      hours: document.getElementById('adj_hours').value || 0,
+      minutes: document.getElementById('adj_mins').value || 0,
+      seconds: document.getElementById('adj_secs').value || 0
+    })
+  });
 }
 
 async function adjCancelJob(id) {
   await fetch('/cancel/' + id, { method: 'POST' });
 }
 
+function adjFormat(sec) {
+  const h = Math.floor(sec/3600);
+  const m = Math.floor((sec%3600)/60);
+  const s = sec%60;
+  return h+'h '+m+'m '+s+'s';
+}
+
 async function adjLoadJobs() {
-  if (document.getElementById('adjust-screen').classList.contains('hidden')) return;
+  if (!document.getElementById('adjust-screen') || document.getElementById('adjust-screen').classList.contains('hidden')) return;
   try {
     const res = await fetch('/jobs');
     const jobs = await res.json();
-    const el = document.getElementById('adj_jobs_list');
-    if (!el) return;
-    if (!jobs.length) { el.innerHTML = '<div class="empty-queue">no jobs scheduled</div>'; return; }
-    el.innerHTML = jobs.map(j => {
-      const rem = j.done ? 0 : (j.remaining || 0);
-      const h = Math.floor(rem/3600), mn = Math.floor((rem%3600)/60), s = rem%60;
-      const timeStr = h+'h '+mn+'m '+s+'s';
-      return `<div class="queue-item ${j.done ? 'done' : 'pending'}">
+    const container = document.getElementById('adj_jobs_list');
+    if (!container) return;
+
+    if (!jobs.length) { container.innerHTML = '<div class="empty-queue">no jobs</div>'; return; }
+
+    container.innerHTML = '';
+    jobs.forEach(j => {
+      const div = document.createElement('div');
+      div.className = 'queue-item ' + (j.done ? 'done' : 'pending');
+      div.innerHTML = `
         <div class="qi-info">
           <div class="qi-event">Job #${j.id}</div>
-          <div class="qi-tmpl">${j.done ? JSON.stringify(j.result||{}) : timeStr}</div>
+          <div class="qi-tmpl">${j.done ? JSON.stringify(j.result) : adjFormat(j.remaining)}</div>
         </div>
         <span class="qi-status ${j.done ? 'done' : 'pending'}">${j.done ? 'done' : 'pending'}</span>
         ${!j.done ? `<button class="qi-remove" onclick="adjCancelJob(${j.id})">×</button>` : ''}
-      </div>`;
-    }).join('');
-    // log completed jobs once
-    jobs.forEach(j => {
+      `;
+      container.appendChild(div);
+
       if (j.done && j.result && !adjLoggedJobs.has(j.id)) {
-        adjAddLog('✓ Job #' + j.id + ': ' + JSON.stringify(j.result), 'success');
+        adjAddLog(j.result);
         adjLoggedJobs.add(j.id);
       }
     });
@@ -2611,7 +2594,6 @@ async function adjLoadJobs() {
 }
 
 setInterval(adjLoadJobs, 1000);
-
 </script>
 </body>
 </html>
