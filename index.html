@@ -598,6 +598,25 @@
   .af-group-header:active { cursor: grabbing; }
   .af-group.dragging { opacity: 0.4; }
   .af-group.drag-over { outline: 2px dashed var(--accent); border-radius: 12px; }
+  .group-name-display {
+    cursor: text;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.2s;
+    padding: 0 2px;
+  }
+  .group-name-display:hover { border-bottom-color: var(--accent); }
+  .group-name-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--accent);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: inherit;
+    font-weight: inherit;
+    outline: none;
+    width: 160px;
+    padding: 0 2px;
+  }
   .drag-handle {
     color: var(--muted); font-size: 0.9rem; margin-right: 0.25rem;
     cursor: grab; opacity: 0.5;
@@ -2031,6 +2050,35 @@ function applyEditTimer(id) {
   log(`Updated: [${item.gameName}] ${item.event.tmpl}${totalSecs > 0 ? ' → ' + fmtSecs(totalSecs) : ''}`, 'info');
 }
 
+// ===== GROUP NAME EDITING =====
+function startGroupNameEdit(afId) {
+  const safeId = afId.replace(/[^a-z0-9]/gi, '_');
+  const display = document.getElementById('gname-display-' + safeId);
+  if (!display) return;
+  const currentName = queue.find(i => i.af_id === afId)?.device_name || '';
+  const input = document.createElement('input');
+  input.className = 'group-name-input';
+  input.value = currentName;
+  input.placeholder = afId;
+  display.replaceWith(input);
+  input.focus();
+  input.select();
+  const save = () => {
+    const newName = input.value.trim();
+    queue.forEach(i => { if (i.af_id === afId) i.device_name = newName; });
+    saveQueue();
+    renderTimersTab();
+    renderQueue();
+  };
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.value = currentName; input.blur(); }
+  });
+  // prevent drag from triggering while editing
+  input.addEventListener('mousedown', e => e.stopPropagation());
+}
+
 // ===== GROUP ORDER (drag) =====
 let groupOrder = []; // array of afId keys in display order
 
@@ -2187,7 +2235,14 @@ function renderTimersTab() {
           <span class="drag-handle">⠿</span>
           <div class="af-group-dot"></div>
           <div>
-            <div class="af-group-id">${items[0].device_name ? items[0].device_name + ' <span class="af-group-afid">('+afId+')</span>' : afId}</div>
+            <div class="af-group-id">
+              <span class="group-name-display" id="gname-display-${afId.replace(/[^a-z0-9]/gi,'_')}"
+                onclick="startGroupNameEdit('${afId}')"
+                title="Click to rename">
+                ${items[0].device_name || afId}
+              </span>
+              <span class="af-group-afid">${items[0].device_name ? ' ('+afId+')' : ''}</span>
+            </div>
             <div class="af-group-meta">${items.length} event${items.length !== 1 ? 's' : ''}</div>
           </div>
           <div class="af-group-counts">${pills}</div>
