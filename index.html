@@ -1404,7 +1404,7 @@ function updateBadge() {
 }
 
 function fmtSecs(s) {
-  if (s < 0) s = 0;
+  if (s < 0) s = 0
   const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
   if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
   return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
