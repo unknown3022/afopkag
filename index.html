@@ -1507,12 +1507,17 @@ let activeTab = 'scheduler';
 
 async function initApp() {
   const sel = document.getElementById('game_select');
-  if (!sel.children.length) {
-    Object.keys(GAMES).forEach(name => {
-      const o = document.createElement('option');
-      o.value = name; o.textContent = name;
-      sel.appendChild(o);
-    });
+  // Always repopulate games
+  sel.innerHTML = '';
+  Object.keys(GAMES).forEach(name => {
+    const o = document.createElement('option');
+    o.value = name; o.textContent = name;
+    sel.appendChild(o);
+  });
+  onGameChange();
+  // Only start intervals once
+  if (!window._intervalsStarted) {
+    window._intervalsStarted = true;
     setInterval(tickAll, 1000);
     setInterval(renderTimersTab, 500);
     setInterval(updateClock, 200);
