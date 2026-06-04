@@ -1609,7 +1609,7 @@ async function initApp() {
   if (!window._intervalsStarted) {
     window._intervalsStarted = true;
     setInterval(tickAll, 1000);
-    setInterval(renderTimersTab, 500);
+    setInterval(updateTimerCountdowns, 500); // lightweight — only updates text, no DOM rebuild
     setInterval(updateClock, 200);
     setInterval(syncQueue, 5000);
   }
@@ -1902,7 +1902,7 @@ function renderQueue() {
         <div class="qi-tmpl">${item.event.name} · ${item.event.tmpl}</div>
       </div>
       <span class="qi-status ${item.status}">${item.status}</span>
-      ${item.status === 'pending' ? `<div class="qi-timer">${fmtSecs(Math.max(0, Math.ceil((item.fireAt - Date.now()) / 1000)))}</div>` : ''}
+      ${item.status === 'pending' ? `<div class="qi-timer" id="qi-timer-${item.id}">${fmtSecs(Math.max(0, Math.ceil((item.fireAt - Date.now()) / 1000)))}</div>` : ''}
       <button class="qi-remove" onclick="removeItem(${item.id})">×</button>
     </div>
   `).join('');
@@ -1949,10 +1949,10 @@ function timerCardHTML(item) {
         <span class="tc-status-badge ${item.status}">${item.status}</span>
       </div>
       <div class="tc-progress-track">
-        <div class="tc-progress-fill ${fillClass}" style="width:${item.status==='done'||item.status==='failed'?100:pct}%"></div>
+        <div class="tc-progress-fill ${fillClass}" id="tc-bar-${item.id}" style="width:${item.status==='done'||item.status==='failed'?100:pct}%"></div>
       </div>
       <div class="tc-bottom">
-        <div class="tc-countdown ${countdownClass}">${countdownText}</div>
+        <div class="tc-countdown ${countdownClass}" id="tc-cd-${item.id}">${countdownText}</div>
         <div style="display:flex;gap:0.3rem;align-items:center">
           ${item.status === 'pending' ? `<button class="tc-edit-btn" onclick="toggleEditTimer(${item.id})" title="Edit timer">✎</button>` : ''}
           <button class="tc-remove" onclick="removeItem(${item.id})" title="Remove">✕</button>
@@ -1960,31 +1960,50 @@ function timerCardHTML(item) {
       </div>
       ${item.status === 'pending' ? `
       <div class="tc-edit-row" id="edit-row-${item.id}" style="display:none">
-        <span style="font-size:0.65rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-right:0.3rem">New time</span>
-        <input class="tc-edit-input" id="edit-h-${item.id}" type="number" min="0" value="0" placeholder="h">
-        <span class="tc-edit-sep">:</span>
-        <input class="tc-edit-input" id="edit-m-${item.id}" type="number" min="0" max="59" value="0" placeholder="m">
-        <span class="tc-edit-sep">:</span>
-        <input class="tc-edit-input" id="edit-s-${item.id}" type="number" min="0" max="59" value="0" placeholder="s">
-        <button class="tc-edit-save" onclick="applyEditTimer(${item.id})">Set</button>
+        <div style="width:100%;display:flex;flex-direction:column;gap:0.5rem">
+          <div style="display:flex;gap:0.4rem;align-items:center">
+            <span style="font-size:0.62rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;min-width:36px">Name</span>
+            <input class="tc-edit-input" id="edit-name-${item.id}" type="text" style="width:100%;text-align:left;letter-spacing:0;font-size:0.82rem" placeholder="Device name..." value="${item.device_name || ''}">
+          </div>
+          <div style="display:flex;gap:0.4rem;align-items:center">
+            <span style="font-size:0.62rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;min-width:36px">Time</span>
+            <input class="tc-edit-input" id="edit-h-${item.id}" type="number" min="0" value="0" placeholder="h">
+            <span class="tc-edit-sep">:</span>
+            <input class="tc-edit-input" id="edit-m-${item.id}" type="number" min="0" max="59" value="0" placeholder="m">
+            <span class="tc-edit-sep">:</span>
+            <input class="tc-edit-input" id="edit-s-${item.id}" type="number" min="0" max="59" value="0" placeholder="s">
+            <button class="tc-edit-save" onclick="applyEditTimer(${item.id})">Save</button>
+          </div>
+        </div>
       </div>` : ''}
     </div>
   `;
 }
 
+const openEdits = new Set();
+
 function toggleEditTimer(id) {
+  if (openEdits.has(id)) {
+    openEdits.delete(id);
+  } else {
+    openEdits.add(id);
+  }
+  applyEditRowState(id);
+}
+
+function applyEditRowState(id) {
   const row = document.getElementById('edit-row-' + id);
   if (!row) return;
-  const isVisible = row.style.display !== 'none';
-  row.style.display = isVisible ? 'none' : 'flex';
-  if (!isVisible) {
-    // Pre-fill with current remaining time
+  const isOpen = openEdits.has(id);
+  row.style.display = isOpen ? 'flex' : 'none';
+  if (isOpen) {
     const item = queue.find(i => i.id === id);
     if (item) {
       const rem = Math.max(0, Math.ceil((item.fireAt - Date.now()) / 1000));
       document.getElementById('edit-h-' + id).value = Math.floor(rem / 3600);
       document.getElementById('edit-m-' + id).value = Math.floor((rem % 3600) / 60);
       document.getElementById('edit-s-' + id).value = rem % 60;
+      document.getElementById('edit-name-' + id).value = item.device_name || '';
     }
   }
 }
@@ -1995,15 +2014,21 @@ function applyEditTimer(id) {
   const h = parseInt(document.getElementById('edit-h-' + id).value) || 0;
   const m = parseInt(document.getElementById('edit-m-' + id).value) || 0;
   const s = parseInt(document.getElementById('edit-s-' + id).value) || 0;
+  const newName = document.getElementById('edit-name-' + id).value.trim();
   const totalSecs = h * 3600 + m * 60 + s;
-  if (totalSecs <= 0) return;
-  item.fireAt = Date.now() + totalSecs * 1000;
-  item.totalSecs = totalSecs;
+  if (totalSecs > 0) {
+    item.fireAt = Date.now() + totalSecs * 1000;
+    item.totalSecs = totalSecs;
+  }
+  if (newName !== item.device_name) {
+    item.device_name = newName;
+  }
+  openEdits.delete(id);
   renderQueue();
   renderTimersTab();
   updateBadge();
   saveQueue();
-  log(`Timer updated: [${item.gameName}] ${item.event.tmpl} → ${fmtSecs(totalSecs)}`, 'info');
+  log(`Updated: [${item.gameName}] ${item.event.tmpl}${totalSecs > 0 ? ' → ' + fmtSecs(totalSecs) : ''}`, 'info');
 }
 
 // ===== GROUP ORDER (drag) =====
@@ -2064,6 +2089,34 @@ function onGroupDrop(e, afId) {
   renderTimersTab();
 }
 
+// Lightweight ticker — updates countdown text without rebuilding DOM
+function updateTimerCountdowns() {
+  const now = Date.now();
+  queue.forEach(item => {
+    if (item.status !== 'pending') return;
+    const rem = Math.max(0, Math.ceil((item.fireAt - now) / 1000));
+    const pct = item.totalSecs > 0 ? Math.max(0, rem / item.totalSecs * 100) : 0;
+    const isDanger = rem <= 10;
+
+    // Update timer card countdown
+    const cd = document.getElementById('tc-cd-' + item.id);
+    if (cd) {
+      cd.textContent = fmtSecs(rem);
+      cd.className = 'tc-countdown' + (isDanger ? ' danger' : '');
+    }
+    // Update progress bar
+    const bar = document.getElementById('tc-bar-' + item.id);
+    if (bar) {
+      bar.style.width = pct + '%';
+      bar.className = 'tc-progress-fill' + (isDanger ? ' danger' : '');
+    }
+    // Update queue item timer
+    const qt = document.getElementById('qi-timer-' + item.id);
+    if (qt) qt.textContent = fmtSecs(rem);
+  });
+  renderUpcoming();
+}
+
 function renderTimersTab() {
   const container = document.getElementById('timers_grid');
   let filtered = timerFilter === 'all' ? queue : queue.filter(i => i.status === timerFilter);
@@ -2110,6 +2163,7 @@ function renderTimersTab() {
     });
   }
 
+  const prevOpenEdits = new Set(openEdits);
   container.innerHTML = displayOrder.map(afId => {
     const items = groups[afId];
     if (!items) return '';
