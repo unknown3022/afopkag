@@ -1,8 +1,7 @@
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/appsflyer_scheduler.html"
-    }
+{
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/adjust", "dest": "/adjust.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
