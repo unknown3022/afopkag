@@ -1940,8 +1940,7 @@ function showApp(app) {
     document.getElementById('app-screen').classList.remove('hidden');
     initApp();
   } else if (app === 'adjust') {
-    document.getElementById('adjust-screen').classList.remove('hidden');
-    adjInitJobs();
+    window.location.href = '/adjust';
   } else {
     document.getElementById('menu-screen').classList.remove('hidden');
   }
