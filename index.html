@@ -802,17 +802,17 @@
         </div>
       </div>
 
-      <div class="card" style="flex:1">
-        <div class="card-label">// Scheduled Queue</div>
-        <div id="queue_list"><div class="empty-queue">no events in queue</div></div>
-      </div>
-
       <div class="card">
         <div class="card-label">// Event Log</div>
         <div class="log-box" id="log_box">
           <div class="log-line info">— ready —</div>
         </div>
         <button class="btn-secondary" onclick="clearLog()">clear log</button>
+      </div>
+
+      <div class="card" style="flex:1">
+        <div class="card-label">// Scheduled Queue</div>
+        <div id="queue_list"><div class="empty-queue">no events in queue</div></div>
       </div>
     </div>
   </div>
@@ -827,6 +827,10 @@
         <button class="filter-btn" id="filter_pending" onclick="setFilter('pending')">Pending</button>
         <button class="filter-btn" id="filter_done" onclick="setFilter('done')">Done</button>
         <button class="filter-btn" id="filter_failed" onclick="setFilter('failed')">Failed</button>
+        <div style="width:1px;background:var(--border);height:20px;margin:0 0.25rem"></div>
+        <button class="filter-btn" id="sort_device" onclick="setSort('device')" title="Sort by Device Name">↕ Device</button>
+        <button class="filter-btn" id="sort_game" onclick="setSort('game')" title="Sort by Game">↕ Game</button>
+        <button class="filter-btn" id="sort_time" onclick="setSort('time')" title="Sort by Time">↕ Time</button>
         <button class="clear-done-btn" onclick="clearFinished()">✕ Clear finished</button>
       </div>
       <div id="timers_grid">
@@ -1590,6 +1594,7 @@ let platform = 'ios';
 let queue = [];
 let nextId = 1;
 let timerFilter = 'all';
+let timerSort = null; // null = manual drag order, 'device', 'game', 'time'
 let activeTab = 'scheduler';
 
 async function initApp() {
@@ -1913,6 +1918,13 @@ function setFilter(f) {
   renderTimersTab();
 }
 
+function setSort(s) {
+  timerSort = timerSort === s ? null : s;
+  document.querySelectorAll('[id^="sort_"]').forEach(b => b.classList.remove('active'));
+  if (timerSort) document.getElementById('sort_' + timerSort).classList.add('active');
+  renderTimersTab();
+}
+
 function clearFinished() {
   queue = queue.filter(i => i.status === 'pending' || i.status === 'firing');
   renderQueue();
@@ -2078,7 +2090,29 @@ function renderTimersTab() {
   currentKeys.forEach(k => { if (!groupOrder.includes(k)) groupOrder.push(k); });
   groupOrder = groupOrder.filter(k => currentKeys.includes(k));
 
-  container.innerHTML = groupOrder.map(afId => {
+  // Apply sort if active
+  let displayOrder = [...groupOrder];
+  if (timerSort === 'device') {
+    displayOrder.sort((a, b) => {
+      const nameA = (groups[a][0].device_name || a).toLowerCase();
+      const nameB = (groups[b][0].device_name || b).toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+  } else if (timerSort === 'game') {
+    displayOrder.sort((a, b) => {
+      const nameA = groups[a][0].gameName.toLowerCase();
+      const nameB = groups[b][0].gameName.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+  } else if (timerSort === 'time') {
+    displayOrder.sort((a, b) => {
+      const nextA = Math.min(...groups[a].filter(i => i.status === 'pending').map(i => i.fireAt).concat([Infinity]));
+      const nextB = Math.min(...groups[b].filter(i => i.status === 'pending').map(i => i.fireAt).concat([Infinity]));
+      return nextA - nextB;
+    });
+  }
+
+  container.innerHTML = displayOrder.map(afId => {
     const items = groups[afId];
     if (!items) return '';
     const nPending = items.filter(i => i.status === 'pending' || i.status === 'firing').length;
