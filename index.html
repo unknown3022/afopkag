@@ -442,6 +442,37 @@
     max-width: 120px;
   }
 
+  .tc-edit-btn {
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 0.85rem; padding: 0.3rem;
+    border-radius: 6px; transition: all 0.15s; line-height: 1;
+  }
+  .tc-edit-btn:hover { color: var(--accent); background: var(--accent-soft); }
+  .tc-edit-row {
+    display: flex; gap: 0.4rem; align-items: center;
+    margin-top: 0.6rem; padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+  }
+  .tc-edit-input {
+    width: 52px; background: var(--surface);
+    border: 1px solid var(--border2); border-radius: 8px;
+    color: var(--text); font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9rem; font-weight: 600; padding: 0.35rem 0.4rem;
+    text-align: center; outline: none;
+    transition: border-color 0.2s;
+  }
+  .tc-edit-input:focus { border-color: var(--accent); }
+  .tc-edit-sep { color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-weight: 700; }
+  .tc-edit-save {
+    margin-left: auto;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border: none; border-radius: 8px;
+    padding: 0.35rem 0.75rem;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tc-edit-save:hover { opacity: 0.85; }
   .tc-remove {
     background: none; border: none; color: var(--muted);
     cursor: pointer; font-size: 0.9rem; padding: 0.3rem;
@@ -550,6 +581,52 @@
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1rem;
   }
+
+  /* Timers tab layout */
+  .timers-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 1.5rem;
+    max-width: 1380px;
+    align-items: start;
+  }
+  .timers-main { min-width: 0; }
+  .timers-sidebar { position: sticky; top: 1rem; }
+
+  /* Drag handle */
+  .af-group-header { cursor: grab; user-select: none; }
+  .af-group-header:active { cursor: grabbing; }
+  .af-group.dragging { opacity: 0.4; }
+  .af-group.drag-over { outline: 2px dashed var(--accent); border-radius: 12px; }
+  .drag-handle {
+    color: var(--muted); font-size: 0.9rem; margin-right: 0.25rem;
+    cursor: grab; opacity: 0.5;
+  }
+
+  /* Upcoming log */
+  .upcoming-item {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.78rem;
+  }
+  .upcoming-item:last-child { border-bottom: none; }
+  .upcoming-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0; margin-top: 0.3rem;
+    box-shadow: 0 0 6px var(--accent-glow);
+  }
+  .upcoming-dot.soon { background: var(--warn); box-shadow: 0 0 6px rgba(245,158,11,0.4); }
+  .upcoming-time {
+    font-family: 'IBM Plex Mono', monospace; font-weight: 700;
+    color: var(--text); white-space: nowrap; min-width: 68px;
+  }
+  .upcoming-time.soon { color: var(--warn); }
+  .upcoming-info { min-width: 0; }
+  .upcoming-game { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .upcoming-event { font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .upcoming-device { font-size: 0.65rem; color: var(--accent); font-family: 'IBM Plex Mono', monospace; }
+  .upcoming-empty { color: var(--muted); font-size: 0.78rem; font-family: 'IBM Plex Mono', monospace; padding: 1rem 0; text-align: center; }
 
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -743,15 +820,25 @@
 
 <!-- ===== TIMERS TAB ===== -->
 <div class="tab-panel" id="tab_timers">
-  <div class="timers-toolbar">
-    <button class="filter-btn active" id="filter_all" onclick="setFilter('all')">All</button>
-    <button class="filter-btn" id="filter_pending" onclick="setFilter('pending')">Pending</button>
-    <button class="filter-btn" id="filter_done" onclick="setFilter('done')">Done</button>
-    <button class="filter-btn" id="filter_failed" onclick="setFilter('failed')">Failed</button>
-    <button class="clear-done-btn" onclick="clearFinished()">✕ Clear finished</button>
-  </div>
-  <div id="timers_grid">
-    <div class="timers-empty"><span>⏱</span>No timers yet — schedule an event first</div>
+  <div class="timers-layout">
+    <div class="timers-main">
+      <div class="timers-toolbar">
+        <button class="filter-btn active" id="filter_all" onclick="setFilter('all')">All</button>
+        <button class="filter-btn" id="filter_pending" onclick="setFilter('pending')">Pending</button>
+        <button class="filter-btn" id="filter_done" onclick="setFilter('done')">Done</button>
+        <button class="filter-btn" id="filter_failed" onclick="setFilter('failed')">Failed</button>
+        <button class="clear-done-btn" onclick="clearFinished()">✕ Clear finished</button>
+      </div>
+      <div id="timers_grid">
+        <div class="timers-empty"><span>⏱</span>No timers yet — schedule an event first</div>
+      </div>
+    </div>
+    <div class="timers-sidebar">
+      <div class="card">
+        <div class="card-label">// Upcoming Timers</div>
+        <div id="upcoming_log"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1856,22 +1943,129 @@ function timerCardHTML(item) {
       </div>
       <div class="tc-bottom">
         <div class="tc-countdown ${countdownClass}">${countdownText}</div>
-        <button class="tc-remove" onclick="removeItem(${item.id})" title="Remove">✕</button>
+        <div style="display:flex;gap:0.3rem;align-items:center">
+          ${item.status === 'pending' ? `<button class="tc-edit-btn" onclick="toggleEditTimer(${item.id})" title="Edit timer">✎</button>` : ''}
+          <button class="tc-remove" onclick="removeItem(${item.id})" title="Remove">✕</button>
+        </div>
       </div>
+      ${item.status === 'pending' ? `
+      <div class="tc-edit-row" id="edit-row-${item.id}" style="display:none">
+        <span style="font-size:0.65rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-right:0.3rem">New time</span>
+        <input class="tc-edit-input" id="edit-h-${item.id}" type="number" min="0" value="0" placeholder="h">
+        <span class="tc-edit-sep">:</span>
+        <input class="tc-edit-input" id="edit-m-${item.id}" type="number" min="0" max="59" value="0" placeholder="m">
+        <span class="tc-edit-sep">:</span>
+        <input class="tc-edit-input" id="edit-s-${item.id}" type="number" min="0" max="59" value="0" placeholder="s">
+        <button class="tc-edit-save" onclick="applyEditTimer(${item.id})">Set</button>
+      </div>` : ''}
     </div>
   `;
+}
+
+function toggleEditTimer(id) {
+  const row = document.getElementById('edit-row-' + id);
+  if (!row) return;
+  const isVisible = row.style.display !== 'none';
+  row.style.display = isVisible ? 'none' : 'flex';
+  if (!isVisible) {
+    // Pre-fill with current remaining time
+    const item = queue.find(i => i.id === id);
+    if (item) {
+      const rem = Math.max(0, Math.ceil((item.fireAt - Date.now()) / 1000));
+      document.getElementById('edit-h-' + id).value = Math.floor(rem / 3600);
+      document.getElementById('edit-m-' + id).value = Math.floor((rem % 3600) / 60);
+      document.getElementById('edit-s-' + id).value = rem % 60;
+    }
+  }
+}
+
+function applyEditTimer(id) {
+  const item = queue.find(i => i.id === id);
+  if (!item) return;
+  const h = parseInt(document.getElementById('edit-h-' + id).value) || 0;
+  const m = parseInt(document.getElementById('edit-m-' + id).value) || 0;
+  const s = parseInt(document.getElementById('edit-s-' + id).value) || 0;
+  const totalSecs = h * 3600 + m * 60 + s;
+  if (totalSecs <= 0) return;
+  item.fireAt = Date.now() + totalSecs * 1000;
+  item.totalSecs = totalSecs;
+  renderQueue();
+  renderTimersTab();
+  updateBadge();
+  saveQueue();
+  log(`Timer updated: [${item.gameName}] ${item.event.tmpl} → ${fmtSecs(totalSecs)}`, 'info');
+}
+
+// ===== GROUP ORDER (drag) =====
+let groupOrder = []; // array of afId keys in display order
+
+function renderUpcoming() {
+  const el = document.getElementById('upcoming_log');
+  if (!el) return;
+  const pending = queue
+    .filter(i => i.status === 'pending')
+    .sort((a, b) => a.fireAt - b.fireAt)
+    .slice(0, 20);
+  if (!pending.length) {
+    el.innerHTML = '<div class="upcoming-empty">No upcoming events</div>';
+    return;
+  }
+  el.innerHTML = pending.map(item => {
+    const rem = Math.max(0, Math.ceil((item.fireAt - Date.now()) / 1000));
+    const soon = rem < 300;
+    return `<div class="upcoming-item">
+      <div class="upcoming-dot ${soon ? 'soon' : ''}"></div>
+      <div class="upcoming-time ${soon ? 'soon' : ''}">${fmtSecs(rem)}</div>
+      <div class="upcoming-info">
+        <div class="upcoming-game">${item.gameName}</div>
+        <div class="upcoming-event">${item.event.name}</div>
+        <div class="upcoming-device">${item.device_name || item.af_id}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let dragSrcId = null;
+
+function onGroupDragStart(e, afId) {
+  dragSrcId = afId;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onGroupDragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.af-group').forEach(g => g.classList.remove('drag-over'));
+}
+function onGroupDragOver(e, afId) {
+  e.preventDefault();
+  if (afId === dragSrcId) return;
+  document.querySelectorAll('.af-group').forEach(g => g.classList.remove('drag-over'));
+  e.currentTarget.classList.add('drag-over');
+}
+function onGroupDrop(e, afId) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragSrcId || dragSrcId === afId) return;
+  const fromIdx = groupOrder.indexOf(dragSrcId);
+  const toIdx = groupOrder.indexOf(afId);
+  if (fromIdx === -1 || toIdx === -1) return;
+  groupOrder.splice(fromIdx, 1);
+  groupOrder.splice(toIdx, 0, dragSrcId);
+  renderTimersTab();
 }
 
 function renderTimersTab() {
   const container = document.getElementById('timers_grid');
   let filtered = timerFilter === 'all' ? queue : queue.filter(i => i.status === timerFilter);
 
+  renderUpcoming();
+
   if (filtered.length === 0) {
     container.innerHTML = `<div class="timers-empty" style="padding:5rem 2rem;text-align:center;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;letter-spacing:0.05em"><span style="display:block;font-size:2.5rem;margin-bottom:0.8rem;opacity:0.3">⏱</span>${timerFilter === 'all' ? 'No timers yet — schedule an event first' : 'No ' + timerFilter + ' timers'}</div>`;
     return;
   }
 
-  // Group by af_id, preserving insertion order
+  // Group by af_id
   const groups = {};
   filtered.forEach(item => {
     const key = item.af_id;
@@ -1879,7 +2073,14 @@ function renderTimersTab() {
     groups[key].push(item);
   });
 
-  container.innerHTML = Object.entries(groups).map(([afId, items]) => {
+  // Maintain groupOrder — add new keys, remove gone ones
+  const currentKeys = Object.keys(groups);
+  currentKeys.forEach(k => { if (!groupOrder.includes(k)) groupOrder.push(k); });
+  groupOrder = groupOrder.filter(k => currentKeys.includes(k));
+
+  container.innerHTML = groupOrder.map(afId => {
+    const items = groups[afId];
+    if (!items) return '';
     const nPending = items.filter(i => i.status === 'pending' || i.status === 'firing').length;
     const nDone    = items.filter(i => i.status === 'done').length;
     const nFailed  = items.filter(i => i.status === 'failed').length;
@@ -1891,8 +2092,13 @@ function renderTimersTab() {
     ].join('');
 
     return `
-      <div class="af-group">
+      <div class="af-group" draggable="true"
+        ondragstart="onGroupDragStart(event, '${afId}')"
+        ondragend="onGroupDragEnd(event)"
+        ondragover="onGroupDragOver(event, '${afId}')"
+        ondrop="onGroupDrop(event, '${afId}')">
         <div class="af-group-header">
+          <span class="drag-handle">⠿</span>
           <div class="af-group-dot"></div>
           <div>
             <div class="af-group-id">${items[0].device_name ? items[0].device_name + ' <span class="af-group-afid">('+afId+')</span>' : afId}</div>
