@@ -1,12 +1,10 @@
+
+bash
+
+cat > /mnt/user-data/outputs/vercel.json << 'EOF'
 {
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/appsflyer_scheduler.html"
-    }
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/adjust", "dest": "/adjust.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
-}
