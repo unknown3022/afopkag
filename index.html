@@ -26,6 +26,7 @@
     --card: #0c0c18;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  .hidden { display: none !important; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -2027,7 +2028,7 @@ function showApp(app) {
     document.getElementById('app-screen').classList.remove('hidden');
     initApp();
   } else if (app === 'singular') {
-    window.location.href = '/singular';
+    window.location.href = 'singular.html';
   } else if (app === 'adjust') {
     window.location.href = '/adjust';
   } else {
