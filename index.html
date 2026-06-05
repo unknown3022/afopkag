@@ -26,7 +26,6 @@
     --card: #0c0c18;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  .hidden { display: none !important; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -691,21 +690,14 @@
     box-shadow: 0 8px 32px rgba(99,102,241,0.2);
   }
   .menu-card-icon {
-    width: 100%; height: 58px;
+    width: 48px; height: 48px;
     border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 700; font-size: 0.9rem;
     color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     margin-bottom: 0.4rem;
-  }
-  .menu-card-logo {
-    max-width: 100%;
-    max-height: 58px;
-    object-fit: contain;
-  }
-  .menu-card-logo.square {
-    max-width: 58px;
   }
   .menu-card-title {
     font-size: 1.1rem; font-weight: 700; color: var(--text);
@@ -722,9 +714,6 @@
     background: var(--surface2); border-radius: 20px;
     padding: 0.2rem 0.6rem; letter-spacing: 0.08em;
     text-transform: uppercase;
-  }
-  @media (max-width: 1120px) {
-    .menu-grid { grid-template-columns: repeat(2, 280px); }
   }
   @media (max-width: 960px) {
     .menu-grid { grid-template-columns: 1fr; max-width: 340px; }
@@ -823,34 +812,26 @@
   <div class="menu-subtitle">Choose a tool to get started</div>
   <div class="menu-grid">
     <div class="menu-card" onclick="showApp('appsflyer')">
-      <div class="menu-card-icon">
-        <img class="menu-card-logo square" src="assets/appsflyer.png" alt="AppsFlyer logo">
-      </div>
+      <div class="menu-card-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">AF</div>
       <div class="menu-card-title">AppsFlyer</div>
       <div class="menu-card-desc">S2S event scheduler &amp; timer</div>
       <div class="menu-card-arrow">→</div>
     </div>
-    <div class="menu-card" onclick="showApp('primeearn')">
-      <div class="menu-card-icon">
-        <img class="menu-card-logo" src="assets/prime.png" alt="Prime Earn logo">
-      </div>
-      <div class="menu-card-title">Prime Earn</div>
-      <div class="menu-card-desc">Coming soon</div>
-      <div class="menu-card-arrow menu-card-soon">Soon</div>
+    <div class="menu-card" onclick="showApp('adjust')">
+      <div class="menu-card-icon" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)">AD</div>
+      <div class="menu-card-title">Adjust</div>
+      <div class="menu-card-desc">S2S Manual</div>
+      <div class="menu-card-arrow">→</div>
     </div>
     <div class="menu-card" onclick="showApp('singular')">
-      <div class="menu-card-icon">
-        <img class="menu-card-logo" src="assets/singular.png" alt="Singular logo">
-      </div>
+      <div class="menu-card-icon" style="background:linear-gradient(135deg,#2f83ed,#14b8a6)">SG</div>
       <div class="menu-card-title">Singular</div>
-      <div class="menu-card-desc">Coming soon</div>
-      <div class="menu-card-arrow menu-card-soon">Soon</div>
+      <div class="menu-card-desc">Link Builder</div>
+      <div class="menu-card-arrow">→</div>
     </div>
-    <div class="menu-card" onclick="showApp('adjust')">
-      <div class="menu-card-icon">
-        <img class="menu-card-logo square" src="assets/adjust.png" alt="Adjust logo">
-      </div>
-      <div class="menu-card-title">Adjust</div>
+    <div class="menu-card" onclick="showApp('primeearn')">
+      <div class="menu-card-icon" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">PE</div>
+      <div class="menu-card-title">Prime Earn</div>
       <div class="menu-card-desc">Coming soon</div>
       <div class="menu-card-arrow menu-card-soon">Soon</div>
     </div>
@@ -1064,52 +1045,6 @@
       <div class="card-label">// Logs</div>
       <div class="log-box" id="adj_log_box" style="height:200px;font-size:0.68rem"></div>
       <button class="btn-secondary" onclick="document.getElementById('adj_log_box').innerHTML=''">clear log</button>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ===== SINGULAR SCREEN ===== -->
-<div id="singular-screen" class="hidden">
-<header>
-  <button onclick="showMenu()" style="background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:0.35rem 0.75rem;font-size:0.75rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:0.05em;transition:all 0.2s;margin-right:0.5rem" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">â† Back</button>
-  <div class="logo-mark" style="background:transparent;box-shadow:none;width:92px">
-    <img src="assets/singular.png" alt="Singular logo" style="max-width:92px;max-height:32px;object-fit:contain">
-  </div>
-  <h1>Singular <span style="color:#2f83ed">Postback</span></h1>
-  <span class="tag" style="border-color:rgba(47,131,237,0.3);color:#2f83ed;background:rgba(47,131,237,0.08)">Offertoro</span>
-</header>
-
-<div class="layout" style="margin-top:1.75rem">
-  <div class="card">
-    <div class="card-label">// Singular Link Fields</div>
-    <div class="field">
-      <label>Transaction ID</label>
-      <input id="singular_transaction_id" type="text" placeholder="Replaces YYY" oninput="singularUpdatePreview()">
-    </div>
-    <div class="field">
-      <label>Package ID</label>
-      <input id="singular_package_id" type="text" placeholder="Replaces XXX" oninput="singularUpdatePreview()">
-    </div>
-    <div class="field">
-      <label>IP Address</label>
-      <input id="singular_ip" type="text" placeholder="Replaces IP" oninput="singularUpdatePreview()">
-    </div>
-    <div class="field">
-      <label>Event</label>
-      <input id="singular_event" type="text" placeholder="Replaces EVENT" oninput="singularUpdatePreview()">
-    </div>
-    <div id="singular_url_preview" style="margin-top:0.5rem; padding:0.75rem; background:var(--bg); border:1px solid var(--border); border-radius:8px; font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--muted); line-height:1.7; word-break:break-all;"></div>
-    <button class="btn-primary" style="margin-top:1rem;background:linear-gradient(135deg,#2f83ed,#14b8a6);box-shadow:0 4px 16px rgba(47,131,237,0.25)" onclick="singularSend()">Send Link</button>
-  </div>
-
-  <div class="right-panel">
-    <div class="card" style="flex:1">
-      <div class="card-label">// Response Log</div>
-      <div class="log-box" id="singular_log_box" style="height:320px;font-size:0.68rem">
-        <div class="log-line info">ready</div>
-      </div>
-      <button class="btn-secondary" onclick="document.getElementById('singular_log_box').innerHTML=''">clear log</button>
     </div>
   </div>
 </div>
@@ -1882,7 +1817,6 @@ const GAMES = {
     ]
   },
 };
-
 let platform = 'ios';
 let queue = [];
 let nextId = 1;
@@ -2023,7 +1957,6 @@ function doLogin() {
 
 function showMenu() {
   document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('singular-screen').classList.add('hidden');
   document.getElementById('menu-screen').classList.remove('hidden');
   document.getElementById('menu-greeting').textContent = 'Welcome back, ' + currentUser;
 }
@@ -2031,15 +1964,14 @@ function showMenu() {
 function showApp(app) {
   document.getElementById('menu-screen').classList.add('hidden');
   document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('singular-screen').classList.add('hidden');
   document.getElementById('adjust-screen').classList.add('hidden');
   if (app === 'appsflyer') {
     document.getElementById('app-screen').classList.remove('hidden');
     initApp();
-  } else if (app === 'singular') {
-    window.location.href = './singular.html';
   } else if (app === 'adjust') {
-    window.location.href = './adjust.html';
+    window.location.href = '/adjust';
+  } else if (app === 'singular') {
+    window.location.href = '/singular';
   } else {
     document.getElementById('menu-screen').classList.remove('hidden');
   }
@@ -2598,62 +2530,6 @@ function log(msg, type='info') {
 
 function clearLog() {
   document.getElementById('log_box').innerHTML = '<div class="log-line info">— cleared —</div>';
-}
-
-// ===== SINGULAR =====
-function singularGetData() {
-  return {
-    transactionId: document.getElementById('singular_transaction_id').value.trim(),
-    packageId: document.getElementById('singular_package_id').value.trim(),
-    ip: document.getElementById('singular_ip').value.trim(),
-    eventName: document.getElementById('singular_event').value.trim()
-  };
-}
-
-function singularBuildUrl(data = singularGetData()) {
-  const url = new URL('https://www.offertoro.com/pb/singular');
-  url.searchParams.set('TRANSACTION_ID', data.transactionId || 'YYY');
-  url.searchParams.set('package_id', data.packageId || 'XXX');
-  url.searchParams.set('click_ip', data.ip || 'IP');
-  url.searchParams.set('event_name', data.eventName || 'EVENT');
-  url.searchParams.set('wSec', 'cbtzQABeZMdWYv');
-  return url.toString();
-}
-
-function singularUpdatePreview() {
-  const preview = document.getElementById('singular_url_preview');
-  if (!preview) return;
-  preview.textContent = singularBuildUrl();
-}
-
-function singularAddLog(data, type='info') {
-  const box = document.getElementById('singular_log_box');
-  if (!box) return;
-  const ts = new Date().toTimeString().slice(0,8);
-  const line = document.createElement('div');
-  line.className = `log-line ${type}`;
-  line.style.whiteSpace = 'pre-wrap';
-  line.textContent = `[${ts}] ${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}`;
-  box.insertBefore(line, box.firstChild);
-}
-
-async function singularSend() {
-  const data = singularGetData();
-  if (!data.transactionId || !data.packageId || !data.ip || !data.eventName) {
-    singularAddLog('Fill all four fields before sending.', 'error');
-    return;
-  }
-
-  singularAddLog('Sending ' + singularBuildUrl(data));
-
-  try {
-    const params = new URLSearchParams(data);
-    const res = await fetch('/api/singular?' + params.toString());
-    const payload = await res.json();
-    singularAddLog(payload, res.ok ? 'success' : 'error');
-  } catch (error) {
-    singularAddLog(error.message, 'error');
-  }
 }
 
 // ===== ADJUST =====
