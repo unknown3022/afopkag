@@ -1044,7 +1044,7 @@
     <div class="card">
       <div class="card-label">// Logs</div>
       <div class="log-box" id="adj_log_box" style="height:200px;font-size:0.68rem"></div>
-      <button class="btn-secondary" onclick="document.getElementById('adj_log_box').innerHTML=''">clear log</button>
+      <button class="btn-secondary" onclick="adjClearLog()">clear log</button>
     </div>
   </div>
 </div>
@@ -1156,11 +1156,11 @@ const GAMES = {
       {name:"Level 60",tmpl:"af_zw_lv60",value:{}},
       {name:"Level 80",tmpl:"af_zw_lv80",value:{}},
       {name:"Level 100",tmpl:"af_zw_lv100",value:{}},
-      {name:"\ud83d\udcb0 Any Purchase",tmpl:"af_purchase",value:{"af_revenue": 1.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
-      {name:"\ud83d\udcb0 Purchase $4.99",tmpl:"af_purchase_4.99",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
-      {name:"\ud83d\udcb0 Purchase $9.99",tmpl:"af_purchase_9.99",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
-      {name:"\ud83d\udcb0 Purchase $19.99",tmpl:"af_purchase_19.99",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
-      {name:"\ud83d\udcb0 Newbie Battle Pass",tmpl:"af_zw_newbiebp_5_paid",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "battle_pass"}},
+      {name:"💰 Any Purchase",tmpl:"af_purchase",value:{"af_revenue": 1.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $4.99",tmpl:"af_purchase_4.99",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $9.99",tmpl:"af_purchase_9.99",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $19.99",tmpl:"af_purchase_19.99",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Newbie Battle Pass",tmpl:"af_zw_newbiebp_5_paid",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "battle_pass"}},
     ]
   },
   "Mu: Dark Epoch": {
@@ -1248,7 +1248,7 @@ const GAMES = {
       {name:"Stronghold Level 30",tmpl:"BE+CITY+LEVEL+30",value:{}},
       {name:"Stronghold Level 34",tmpl:"BE+CITY+LEVEL+34",value:{}},
       {name:"Stronghold Level 45",tmpl:"BE+CITY+LEVEL+45",value:{}},
-      {name:"\ud83d\udcb0 Purchase $9.99",tmpl:"af_purchase_9.99",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $9.99",tmpl:"af_purchase_9.99",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
       {name:"First Purchase of $19.99 Package",tmpl:"PACKAGE4_1",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "PACKAGE4"}},
       {name:"First Purchase of $49.99 Package",tmpl:"PACKAGE5_1",value:{"af_revenue": 49.99, "af_currency": "USD", "af_content_id": "PACKAGE5"}},
       {name:"Second Purchase of $9.99 Package",tmpl:"PACKAGE3_2",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "PACKAGE3"}},
@@ -1507,7 +1507,7 @@ const GAMES = {
     events:[
       {name:"Village 5 Complete",tmpl:"village_5_complete",value:{}},
       {name:"Village 10 Complete",tmpl:"village_25_complete",value:{}},
-      {name:"\ud83d\udcb0 Purchase",tmpl:"pay_price_499",value:{"af_revenue": 10.0, "af_currency": "USD", "af_quantity": 1}},
+      {name:"💰 Purchase",tmpl:"pay_price_499",value:{"af_revenue": 10.0, "af_currency": "USD", "af_quantity": 1}},
     ]
   },
   "Coin Master Board Adventure": {
@@ -1515,7 +1515,7 @@ const GAMES = {
     events:[
       {name:"Village 1 Complete",tmpl:"village_1_complete",value:{}},
       {name:"Village 45 Complete",tmpl:"village_60_complete",value:{}},
-      {name:"\ud83d\udcb0 Purchase",tmpl:"af_purchase",value:{"af_revenue": 49.99, "af_currency": "USD", "af_quantity": 1}},
+      {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 49.99, "af_currency": "USD", "af_quantity": 1}},
     ]
   },
   "Idle Restaurant Cooking Tycoon": {
@@ -1528,7 +1528,7 @@ const GAMES = {
       {name:"Scene 10 Completed",tmpl:"scene_completed_10",value:{}},
       {name:"Scene 12 Completed",tmpl:"scene_completed_12",value:{}},
       {name:"Scene 15 Completed",tmpl:"scene_completed_15",value:{}},
-      {name:"\ud83d\udcb0 Purchase $4.99",tmpl:"pay_price_499",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $4.99",tmpl:"pay_price_499",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Richdom Island Sim": {
@@ -1541,7 +1541,7 @@ const GAMES = {
       {name:"My House Level 17",tmpl:"myhouse_level_17",value:{}},
       {name:"My House Level 19",tmpl:"myhouse_level_19",value:{}},
       {name:"My House Level 21",tmpl:"myhouse_level_21",value:{}},
-      {name:"\ud83d\udcb0 Purchase $4.99",tmpl:"pay_price_499",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $4.99",tmpl:"pay_price_499",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Richdom Tycoon": {
@@ -1563,7 +1563,7 @@ const GAMES = {
       {name:"Bingo Level 30",tmpl:"bingo_game_level_30",value:{}},
       {name:"Bingo Level 40",tmpl:"bingo_game_level_40",value:{}},
       {name:"Bingo Level 50",tmpl:"bingo_game_level_50",value:{}},
-      {name:"\ud83d\udcb0 Purchase $4.99",tmpl:"bingo_purchase_499",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $4.99",tmpl:"bingo_purchase_499",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Slots Royale 777": {
@@ -1574,7 +1574,7 @@ const GAMES = {
       {name:"Level Up 30",tmpl:"levelup_30",value:{}},
       {name:"Level Up 40",tmpl:"levelup_40",value:{}},
       {name:"Level Up 50",tmpl:"levelup_50",value:{}},
-      {name:"\ud83d\udcb0 Purchase $4.99",tmpl:"Pay_4.99",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $4.99",tmpl:"Pay_4.99",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Slots of Vegas": {
@@ -1587,7 +1587,7 @@ const GAMES = {
       {name:"Level Up 48",tmpl:"levelup_48",value:{}},
       {name:"Level Up 54",tmpl:"levelup_54",value:{}},
       {name:"Level Up 60",tmpl:"levelup_60",value:{}},
-      {name:"\ud83d\udcb0 Purchase $4.99",tmpl:"pay_4.99",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $4.99",tmpl:"pay_4.99",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Jackpot Slots": {
@@ -1600,7 +1600,7 @@ const GAMES = {
       {name:"Level Up 180",tmpl:"levelup_180",value:{}},
       {name:"Level Up 240",tmpl:"levelup_240",value:{}},
       {name:"Level Up 360",tmpl:"levelup_360",value:{}},
-      {name:"\ud83d\udcb0 New Player Sale",tmpl:"new_player_sale",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 New Player Sale",tmpl:"new_player_sale",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Texas Holdem Pokerist": {
@@ -1613,7 +1613,7 @@ const GAMES = {
       {name:"Level Up 50",tmpl:"50levelup",value:{}},
       {name:"Level Up 80",tmpl:"80levelup",value:{}},
       {name:"Level Up 90",tmpl:"90levelup",value:{}},
-      {name:"\ud83d\udcb0 Purchase",tmpl:"af_purchase",value:{"af_revenue": 49.99, "af_currency": "USD", "af_quantity": 1}},
+      {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 49.99, "af_currency": "USD", "af_quantity": 1}},
     ]
   },
   "Casino Roulette Roulettist": {
@@ -1626,7 +1626,7 @@ const GAMES = {
       {name:"Level Up 50",tmpl:"50levelup",value:{}},
       {name:"Level Up 80",tmpl:"80levelup",value:{}},
       {name:"Level Up 90",tmpl:"90levelup",value:{}},
-      {name:"\ud83d\udcb0 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Blackjack 21 Blackjackist": {
@@ -1639,7 +1639,7 @@ const GAMES = {
       {name:"Level Up 50",tmpl:"50levelup",value:{}},
       {name:"Level Up 80",tmpl:"80levelup",value:{}},
       {name:"Level Up 90",tmpl:"90levelup",value:{}},
-      {name:"\ud83d\udcb0 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Vegas Casino Slottist": {
@@ -1652,7 +1652,7 @@ const GAMES = {
       {name:"Level Up 50",tmpl:"50levelup",value:{}},
       {name:"Level Up 80",tmpl:"80levelup",value:{}},
       {name:"Level Up 90",tmpl:"90levelup",value:{}},
-      {name:"\ud83d\udcb0 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Video Poker Pokerist": {
@@ -1665,7 +1665,7 @@ const GAMES = {
       {name:"Level Up 50",tmpl:"50levelup",value:{}},
       {name:"Level Up 80",tmpl:"80levelup",value:{}},
       {name:"Level Up 90",tmpl:"90levelup",value:{}},
-      {name:"\ud83d\udcb0 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Vegas Keno Pokerist": {
@@ -1678,7 +1678,7 @@ const GAMES = {
       {name:"Level Up 50",tmpl:"50levelup",value:{}},
       {name:"Level Up 80",tmpl:"80levelup",value:{}},
       {name:"Level Up 90",tmpl:"90levelup",value:{}},
-      {name:"\ud83d\udcb0 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Ultimate Holdem Pokerist": {
@@ -1691,7 +1691,7 @@ const GAMES = {
       {name:"Level Up 50",tmpl:"50levelup",value:{}},
       {name:"Level Up 80",tmpl:"80levelup",value:{}},
       {name:"Level Up 90",tmpl:"90levelup",value:{}},
-      {name:"\ud83d\udcb0 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase",tmpl:"repeatable_purchase",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Word Search Sea": {
@@ -1732,8 +1732,8 @@ const GAMES = {
       {name:"Complete Level 4000",tmpl:"T0Q400",value:{}},
       {name:"Complete Level 5000",tmpl:"T0Q500",value:{}},
       {name:"Complete Level 7000",tmpl:"T0Q700",value:{}},
-      {name:"\ud83d\udcb0 Purchase $9.99",tmpl:"vt_package_9.99",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
-      {name:"\ud83d\udcb0 Purchase $19.99",tmpl:"vt_package_19.99",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $9.99",tmpl:"vt_package_9.99",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"💰 Purchase $19.99",tmpl:"vt_package_19.99",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Sudoku Master Number Puzzle": {
@@ -1791,7 +1791,7 @@ const GAMES = {
     events:[
       {name:"Purchase Subscription",tmpl:"af_purchase",value:{}},
     ]
-  },
+  }
 };
 let platform = 'ios';
 let queue = [];
@@ -2510,6 +2510,11 @@ function clearLog() {
 
 // ===== ADJUST =====
 const adjLoggedJobs = new Set();
+
+function adjClearLog() {
+  const box = document.getElementById("adj_log_box");
+  if (box) box.textContent = "";
+}
 
 function adjAddLog(data) {
   const box = document.getElementById('adj_log_box');
