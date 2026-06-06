@@ -1859,24 +1859,28 @@ function doLogin() {
 }
 
 function showMenu() {
-  document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('menu-screen').classList.remove('hidden');
-  document.getElementById('menu-greeting').textContent = 'Welcome back, ' + currentUser;
+  const appEl = document.getElementById('app-screen');
+  const menuEl = document.getElementById('menu-screen');
+  const greetEl = document.getElementById('menu-greeting');
+  if (appEl) appEl.classList.add('hidden');
+  if (menuEl) menuEl.classList.remove('hidden');
+  if (greetEl) greetEl.textContent = 'Welcome back, ' + currentUser;
 }
 
 function showApp(app) {
-  document.getElementById('menu-screen').classList.add('hidden');
-  document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('adjust-screen').classList.add('hidden');
+  const menuEl = document.getElementById('menu-screen');
+  const appEl = document.getElementById('app-screen');
+  if (menuEl) menuEl.classList.add('hidden');
+  if (appEl) appEl.classList.add('hidden');
   if (app === 'appsflyer') {
-    document.getElementById('app-screen').classList.remove('hidden');
+    if (appEl) appEl.classList.remove('hidden');
     initApp();
   } else if (app === 'adjust') {
     window.location.href = '/adjust';
   } else if (app === 'singular') {
     window.location.href = '/singular';
   } else {
-    document.getElementById('menu-screen').classList.remove('hidden');
+    if (menuEl) menuEl.classList.remove('hidden');
   }
 }
 
