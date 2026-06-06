@@ -6,5 +6,11 @@
     { "src": "/singular.html", "dest": "/singular.html" },
     { "src": "/singular", "dest": "/singular.html" },
     { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "* * * * *"
+    }
   ]
 }
