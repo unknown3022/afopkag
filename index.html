@@ -975,80 +975,6 @@
 
 </div><!-- end app-screen -->
 
-<!-- ===== ADJUST SCREEN ===== -->
-<div id="adjust-screen" class="hidden">
-<header>
-  <button onclick="showMenu()" style="background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:0.35rem 0.75rem;font-size:0.75rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:0.05em;transition:all 0.2s;margin-right:0.5rem" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">← Back</button>
-  <div class="logo-mark" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)"><div class="logo-dot"></div></div>
-  <h1>Adjust <span style="color:#38bdf8">S2S</span> Manual</h1>
-  <span class="tag" style="border-color:rgba(14,165,233,0.3);color:#38bdf8;background:rgba(14,165,233,0.08)">S2S Event Fire</span>
-</header>
-
-<div class="layout" style="margin-top:1.75rem">
-  <div class="card">
-    <div class="card-label">// Event Configuration</div>
-
-    <div class="field">
-      <label>App Token</label>
-      <input id="adj_app_token" type="text" placeholder="App Token">
-    </div>
-    <div class="field">
-      <label>Event Token</label>
-      <input id="adj_event_token" type="text" placeholder="Event Token">
-    </div>
-    <div class="field">
-      <label>Device ID</label>
-      <input id="adj_device_id" type="text" placeholder="Device ID">
-    </div>
-
-    <div class="field">
-      <div style="display:flex;gap:1rem;align-items:center;margin-top:0.25rem">
-        <label style="display:flex;align-items:center;gap:0.5rem;text-transform:none;font-size:0.85rem;color:var(--text2);cursor:pointer">
-          <input type="checkbox" id="adj_ios" checked style="width:auto;accent-color:var(--accent)"> iOS
-        </label>
-        <label style="display:flex;align-items:center;gap:0.5rem;text-transform:none;font-size:0.85rem;color:var(--text2);cursor:pointer">
-          <input type="checkbox" id="adj_s2s" style="width:auto;accent-color:var(--accent)"> s2s
-        </label>
-      </div>
-    </div>
-
-    <button class="btn-primary" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);box-shadow:0 4px 16px rgba(14,165,233,0.25)" onclick="adjCreditNow()">🔥 Credit Now</button>
-
-    <div class="divider"></div>
-    <div class="card-label">// Schedule</div>
-
-    <div class="timer-inputs">
-      <div class="timer-unit">
-        <label>Hours</label>
-        <input id="adj_hours" type="number" min="0" value="0">
-      </div>
-      <div class="timer-colon">:</div>
-      <div class="timer-unit">
-        <label>Minutes</label>
-        <input id="adj_mins" type="number" min="0" max="59" value="0">
-      </div>
-      <div class="timer-colon">:</div>
-      <div class="timer-unit">
-        <label>Seconds</label>
-        <input id="adj_secs" type="number" min="0" max="59" value="0">
-      </div>
-    </div>
-    <button class="btn-secondary" style="margin-top:0.75rem" onclick="adjSchedule()">Schedule</button>
-  </div>
-
-  <div class="right-panel">
-    <div class="card" style="flex:1">
-      <div class="card-label">// Jobs</div>
-      <div id="adj_jobs_list"><div class="empty-queue">no jobs</div></div>
-    </div>
-    <div class="card">
-      <div class="card-label">// Logs</div>
-      <div class="log-box" id="adj_log_box" style="height:200px;font-size:0.68rem"></div>
-      <button class="btn-secondary" onclick="adjClearLog()">clear log</button>
-    </div>
-  </div>
-</div>
-</div>
 
 <script>
 const GAMES = {
@@ -1146,37 +1072,14 @@ const GAMES = {
       {name:"Restore Kingdom 1",tmpl:"af_kingdom_1_restored",value:{}},
       {name:"Restore Kingdom 5",tmpl:"af_kingdom_5_restored",value:{}},
       {name:"Restore Kingdom 10",tmpl:"af_kingdom_10_restored",value:{}},
-      {name:"Restore Kingdom 12",tmpl:"af_kingdom_12_restored",value:{}},
-      {name:"Restore Kingdom 15",tmpl:"af_kingdom_15_restored",value:{}},
-      {name:"Restore Kingdom 18",tmpl:"af_kingdom_18_restored",value:{}},
       {name:"Restore Kingdom 20",tmpl:"af_kingdom_20_restored",value:{}},
-      {name:"Restore Kingdom 22",tmpl:"af_kingdom_22_restored",value:{}},
-      {name:"Restore Kingdom 25",tmpl:"af_kingdom_25_restored",value:{}},
       {name:"Restore Kingdom 29",tmpl:"af_kingdom_29_restored",value:{}},
       {name:"Restore Kingdom 30",tmpl:"af_kingdom_30_restored",value:{}},
-      {name:"Restore Kingdom 35",tmpl:"af_kingdom_35_restored",value:{}},
-      {name:"Restore Kingdom 40",tmpl:"af_kingdom_40_restored",value:{}},
       {name:"Restore Kingdom 45",tmpl:"af_kingdom_45_restored",value:{}},
-      {name:"Restore Kingdom 50",tmpl:"af_kingdom_50_restored",value:{}},
-      {name:"Restore Kingdom 55",tmpl:"af_kingdom_55_restored",value:{}},
       {name:"Restore Kingdom 59",tmpl:"af_kingdom_59_restored",value:{}},
       {name:"Restore Kingdom 60",tmpl:"af_kingdom_60_restored",value:{}},
-      {name:"Restore Kingdom 65",tmpl:"af_kingdom_65_restored",value:{}},
-      {name:"Restore Kingdom 70",tmpl:"af_kingdom_70_restored",value:{}},
-      {name:"Restore Kingdom 75",tmpl:"af_kingdom_75_restored",value:{}},
-      {name:"Restore Kingdom 80",tmpl:"af_kingdom_80_restored",value:{}},
-      {name:"Restore Kingdom 90",tmpl:"af_kingdom_90_restored",value:{}},
       {name:"Restore Kingdom 100",tmpl:"af_kingdom_100_restored",value:{}},
-      {name:"Restore Kingdom 125",tmpl:"af_kingdom_125_restored",value:{}},
-      {name:"Restore Kingdom 150",tmpl:"af_kingdom_150_restored",value:{}},
-      {name:"Restore Kingdom 200",tmpl:"af_kingdom_200_restored",value:{}},
       {name:"Restore Kingdom 250",tmpl:"af_kingdom_250_restored",value:{}},
-      {name:"Restore Kingdom 270",tmpl:"af_kingdom_270_restored",value:{}},
-      {name:"Restore Kingdom 300",tmpl:"af_kingdom_300_restored",value:{}},
-      {name:"Restore Kingdom 350",tmpl:"af_kingdom_350_restored",value:{}},
-      {name:"Restore Kingdom 380",tmpl:"af_kingdom_380_restored",value:{}},
-      {name:"Restore Kingdom 400",tmpl:"af_kingdom_400_restored",value:{}},
-
       {name:"Make a Purchase",tmpl:"af_purchase",value:{"af_revenue": 1.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
@@ -1189,33 +1092,9 @@ const GAMES = {
   "Domino Dreams": {
     key:"Hn5qYjVAaRNJYDcwF4LaWF", pkg:"com.screenshake.dominodreams", ios:"id6444043291",
     events:[
-      {name:"Area 1 Completed",tmpl:"area_1_completed",value:{}},
       {name:"Area 2 Completed",tmpl:"area_2_completed",value:{}},
-      {name:"Area 3 Completed",tmpl:"area_3_completed",value:{}},
-      {name:"Area 4 Completed",tmpl:"area_4_completed",value:{}},
-      {name:"Area 5 Completed",tmpl:"area_5_completed",value:{}},
-      {name:"Area 6 Completed",tmpl:"area_6_completed",value:{}},
-      {name:"Area 7 Completed",tmpl:"area_7_completed",value:{}},
-      {name:"Area 8 Completed",tmpl:"area_8_completed",value:{}},
-      {name:"Area 9 Completed",tmpl:"area_9_completed",value:{}},
-      {name:"Area 10 Completed",tmpl:"area_10_completed",value:{}},
-      {name:"Area 11 Completed",tmpl:"area_11_completed",value:{}},
-      {name:"Area 12 Completed",tmpl:"area_12_completed",value:{}},
-      {name:"Area 13 Completed",tmpl:"area_13_completed",value:{}},
-      {name:"Area 14 Completed",tmpl:"area_14_completed",value:{}},
-      {name:"Area 15 Completed",tmpl:"area_15_completed",value:{}},
-      {name:"Area 16 Completed",tmpl:"area_16_completed",value:{}},
-      {name:"Area 17 Completed",tmpl:"area_17_completed",value:{}},
-      {name:"Area 18 Completed",tmpl:"area_18_completed",value:{}},
-      {name:"Area 20 Completed",tmpl:"area_20_completed",value:{}},
-      {name:"Area 23 Completed",tmpl:"af_area_23_completed",value:{}},
-      {name:"Area 25 Completed",tmpl:"af_area_25_completed",value:{}},
-      {name:"Area 28 Completed",tmpl:"af_area_28_completed",value:{}},
-      {name:"Area 30 Completed",tmpl:"af_area_30_completed",value:{}},
-      {name:"Area 31 Completed",tmpl:"af_area_31_completed",value:{}},
-      {name:"Area 32 Completed",tmpl:"af_area_32_completed",value:{}},
-      {name:"Area 33 Completed",tmpl:"af_area_33_completed",value:{}},
-      {name:"Area 35 Completed",tmpl:"af_area_35_completed",value:{}},
+      {name:"Area 10 Completed",tmpl:"af_area_10_completed",value:{}},
+      {name:"Area 20 Completed",tmpl:"af_area_20_completed",value:{}},
     ]
   },
   "Double Win Slots": {
@@ -1246,9 +1125,6 @@ const GAMES = {
       {name:"Dominance 1.2M",tmpl:"power_120w",value:{}},
       {name:"Dominance 2M",tmpl:"power_200w",value:{}},
       {name:"Dominance 3.5M",tmpl:"power_350w",value:{}},
-      {name:"Dominance 7M",tmpl:"power_700w",value:{}},
-      {name:"Dominance 8M",tmpl:"power_800w",value:{}},
-      {name:"Dominance 10M",tmpl:"power_1000w",value:{}},
       {name:"Dominance 12.5M",tmpl:"power_1250w",value:{}},
       {name:"Dominance 15M",tmpl:"power_1500w",value:{}},
       {name:"Dominance 25M",tmpl:"power_2500w",value:{}},
@@ -1311,6 +1187,46 @@ const GAMES = {
       {name:"1",tmpl:"af_install",value:{}},
       {name:"1",tmpl:"INSTALLATION_TRACKED",value:{}},
       {name:"Make a first time deposit of $10+",tmpl:"sweeps_ftp_min10_s2s",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+    ]
+  },
+  "HighRoller Vegas": {
+    key:"sSpBC5SKPKEV8fbZJgw6vM", pkg:"com.lynxgames.hrv", ios:"id1456325213",
+    events:[
+      {name:"Complete Level 2",tmpl:"app_level_achieved_2_s2s",value:{}},
+      {name:"Complete Level 5",tmpl:"app_level_achieved_5_s2s",value:{}},
+      {name:"Complete Level 10",tmpl:"app_level_achieved_10_s2s",value:{}},
+      {name:"Complete Level 15",tmpl:"app_level_achieved_15_s2s",value:{}},
+      {name:"Complete Level 20",tmpl:"app_level_achieved_20_s2s",value:{}},
+      {name:"Complete Level 30",tmpl:"app_level_achieved_30_s2s",value:{}},
+      {name:"Complete Level 40",tmpl:"app_level_achieved_40_s2s",value:{}},
+      {name:"Complete Level 50",tmpl:"app_level_achieved_50_s2s",value:{}},
+      {name:"Complete Level 60",tmpl:"app_level_achieved_60_s2s",value:{}},
+      {name:"Complete Level 70",tmpl:"app_level_achieved_70_s2s",value:{}},
+      {name:"Complete Level 80",tmpl:"app_level_achieved_80_s2s",value:{}},
+      {name:"Complete Level 90",tmpl:"app_level_achieved_90_s2s",value:{}},
+      {name:"Complete Level 100",tmpl:"app_level_achieved_100_s2s",value:{}},
+      {name:"Complete Level 120",tmpl:"app_level_achieved_120_s2s",value:{}},
+      {name:"Complete Level 140",tmpl:"app_level_achieved_140_s2s",value:{}},
+      {name:"Complete Level 160",tmpl:"app_level_achieved_160_s2s",value:{}},
+      {name:"Complete Level 200",tmpl:"app_level_achieved_200_s2s",value:{}},
+      {name:"Complete Level 250",tmpl:"app_level_achieved_250_s2s",value:{}},
+      {name:"Complete Level 300",tmpl:"app_level_achieved_300_s2s",value:{}},
+      {name:"Complete Level 400",tmpl:"app_level_achieved_400_s2s",value:{}},
+      {name:"app launch",tmpl:"app_launch",value:{}},
+      {name:"af level achieved",tmpl:"af_level_achieved",value:{}},
+      {name:"Ad revenue ",tmpl:"af_ad_revenue",value:{}},
+      {name:"[Super easy] Complete Facebook login",tmpl:"pls_fb_auth_complete_s2s",value:{}},
+      {name:"[Easy] Complete the Tutorial",tmpl:"app_tutorial_completed_s2s",value:{}},
+      {name:"Revenue",tmpl:"af_purchase",value:{"af_revenue": 0.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"First Purchase",tmpl:"pls_pcnt_1st_s2s",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Second Purchase",tmpl:"pls_pcnt_2nd_s2s",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Third Purchase",tmpl:"pls_pcnt_3rd_s2s",value:{"af_revenue": 49.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Purchase $9.99 Deal",tmpl:"pls_rev_9_s2s",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Purchase $19.99 Deal",tmpl:"pls_rev_19_s2s",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Purchase $49.99 Deal",tmpl:"pls_rev_49_s2s",value:{"af_revenue": 49.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Purchase $99.99 Deal",tmpl:"pls_rev_99_s2s",value:{"af_revenue": 99.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Total $50 Spent",tmpl:"pls_rev_over_50_s2s",value:{}},
+      {name:"Total $100 Spent",tmpl:"pls_rev_over_100_s2s",value:{}},
     ]
   },
   "Idle Bank Tycoon": {
@@ -1379,6 +1295,23 @@ const GAMES = {
       {name:"💰 New Player Sale",tmpl:"new_player_sale",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
+  "King Of Avalon": {
+    key:"sSNE3VvEwvGArsGKp49HBj", pkg:"com.funplus.kingofavalon", ios:"id1084930849",
+    events:[
+      {name:"Stronghold Level 5",tmpl:"BE CITY LEVEL 5",value:{}},
+      {name:"Stronghold Level 10",tmpl:"BE+CITY+LEVEL+10",value:{}},
+      {name:"Stronghold Level 14",tmpl:"BE+CITY+LEVEL+14",value:{}},
+      {name:"Stronghold Level 21",tmpl:"BE+CITY+LEVEL+21",value:{}},
+      {name:"Stronghold Level 25",tmpl:"BE+CITY+LEVEL+25",value:{}},
+      {name:"Stronghold Level 30",tmpl:"BE+CITY+LEVEL+30",value:{}},
+      {name:"Stronghold Level 34",tmpl:"BE+CITY+LEVEL+34",value:{}},
+      {name:"Stronghold Level 45",tmpl:"BE+CITY+LEVEL+45",value:{}},
+      {name:"💰 Purchase $9.99",tmpl:"af_purchase_9.99",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"First Purchase of $19.99 Package",tmpl:"PACKAGE4_1",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "PACKAGE4"}},
+      {name:"First Purchase of $49.99 Package",tmpl:"PACKAGE5_1",value:{"af_revenue": 49.99, "af_currency": "USD", "af_content_id": "PACKAGE5"}},
+      {name:"Second Purchase of $9.99 Package",tmpl:"PACKAGE3_2",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "PACKAGE3"}},
+    ]
+  },
   "Lootfiend": {
     key:"rTSHm4cqoYyiJQMqXNFQoV", pkg:"com.megoogames.loot", ios:"id6751641922",
     events:[
@@ -1440,6 +1373,41 @@ const GAMES = {
       {name:"Dragon Power 1000",tmpl:"event_1000_dragon_power",value:{}},
     ]
   },
+  "Mu: Dark Epoch": {
+    key:"u9kMsXhVmK5M8WvvxXkk8C", pkg:"com.global.mus", ios:"id6529538542",
+    events:[
+      {name:"Level 5",tmpl:"level_up5",value:{}},
+      {name:"Level 15",tmpl:"level_up15",value:{}},
+      {name:"Level 60",tmpl:"level_up60",value:{}},
+      {name:"Level 98",tmpl:"level_up98",value:{}},
+      {name:"Level 112",tmpl:"level_up112",value:{}},
+      {name:"Level 129",tmpl:"level_up129",value:{}},
+      {name:"Level 141",tmpl:"level_up141",value:{}},
+      {name:"Level 167",tmpl:"level_up167",value:{}},
+      {name:"Level 199",tmpl:"level_up199",value:{}},
+      {name:"Level 213",tmpl:"level_up213",value:{}},
+      {name:"Level 248",tmpl:"level_up248",value:{}},
+      {name:"Level 270",tmpl:"level_up270",value:{}},
+      {name:"Level 318",tmpl:"level_up318",value:{}},
+      {name:"Level 354",tmpl:"level_up354",value:{}},
+      {name:"Level 366",tmpl:"level_up366",value:{}},
+      {name:"Level 406",tmpl:"level_up406",value:{}},
+      {name:"Reach VIP7",tmpl:"vip_level7",value:{}},
+      {name:"Reach VIP8",tmpl:"vip_level8",value:{}},
+      {name:"VIP7 Achievement Reward",tmpl:"buy_vip_pack_vip71",value:{}},
+      {name:"VIP8 Achievement Reward",tmpl:"buy_vip_pack_vip81",value:{}},
+      {name:"Purchase",tmpl:"purchase_value",value:{"af_revenue": 0.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Purchase $1.99 Daily Package",tmpl:"buy_daily_pack1",value:{"af_revenue": 1.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Purchase $4.99 30 Plus I",tmpl:"buy_monthcard",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Purchase $12.99 30 Plus II",tmpl:"buy_monthcard_plus",value:{"af_revenue": 12.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Buy Diamonds 60 - $0.99",tmpl:"buy_diamonds60",value:{"af_revenue": 0.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Buy Diamonds 980 - $14.99",tmpl:"buy_diamonds980",value:{"af_revenue": 14.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Buy Diamonds 1980 - $29.99",tmpl:"buy_diamonds1980",value:{"af_revenue": 29.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Buy Diamonds 3280 - $49.99",tmpl:"buy_diamonds3280",value:{"af_revenue": 49.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Buy Diamonds 6480 - $99.99",tmpl:"buy_diamonds6480",value:{"af_revenue": 99.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+      {name:"Login",tmpl:"enter_server",value:{}},
+    ]
+  },
   "Plink By Pokerist": {
     key:"YbczyDZZmXbxwpYYyJgqTQ", pkg:"com.kamagames.plinko", ios:"id6511246933",
     events:[
@@ -1454,6 +1422,22 @@ const GAMES = {
       {name:"Complete level 80",tmpl:"80levelup",value:{}},
       {name:"Complete level 90",tmpl:"90levelup",value:{}},
       {name:"Purchase",tmpl:"af_purchase",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+    ]
+  },
+  "Puzzles and Chaos": {
+    key:"ZnhUvonKa6qF9xhgt7GcBQ", pkg:"com.global.pnck", ios:"id6446389130",
+    events:[
+      {name:"Reach Castle 5",tmpl:"castle5_levelup",value:{}},
+      {name:"Reach Castle 7",tmpl:"castle7_levelup",value:{}},
+      {name:"Reach Castle 10",tmpl:"castle10_levelup",value:{}},
+      {name:"Reach Castle 14",tmpl:"castle14_levelup",value:{}},
+      {name:"Reach Castle 15",tmpl:"castle15_levelup",value:{}},
+      {name:"Reach Castle 22",tmpl:"castle22_levelup",value:{}},
+      {name:"Reach Castle 25",tmpl:"castle25_levelup",value:{}},
+      {name:"Reach Castle 30",tmpl:"castle30_levelup",value:{}},
+      {name:"Purchase Monthcard",tmpl:"monthcard_recharge",value:{}},
+      {name:"Purchase First Recharge Mythical Hero",tmpl:"gardener_recharge",value:{}},
+      {name:"Purchase $99.99 Voucher",tmpl:"voucher_recharge9999",value:{}},
     ]
   },
   "Richdom Island Sim": {
@@ -1510,6 +1494,23 @@ const GAMES = {
       {name:"Level 4200",tmpl:"Finish_level_4200",value:{}},
       {name:"Level 5000",tmpl:"Finish_level_5000",value:{}},
       {name:"Make A Purchase",tmpl:"sdk_purchase_success",value:{"af_revenue": 1.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+    ]
+  },
+  "Sea of Conquest: Pirate War": {
+    key:"sSNE3VvEwvGArsGKp49HBj", pkg:"", ios:"id6463715971",
+    events:[
+      {name:"Reach Level 4",tmpl:"af_ship_4",value:{}},
+      {name:"Reach Level 6",tmpl:"Ship Level 6",value:{}},
+      {name:"Reach Level 10",tmpl:"Ship Level 10",value:{}},
+      {name:"Reach Level 11",tmpl:"Ship Level 11",value:{}},
+      {name:"Reach Level 16",tmpl:"Ship Level 16",value:{}},
+      {name:"Reach Level 18",tmpl:"Ship Level 18",value:{}},
+      {name:"Reach Level 21",tmpl:"Ship Level 21",value:{}},
+      {name:"Reach Level 30",tmpl:"Ship Level 30",value:{}},
+      {name:"Purchase $9.99",tmpl:"Once pay 9.99",value:{}},
+      {name:"Purchase $19.99",tmpl:"Once pay 19.99",value:{}},
+      {name:"Purchase $49.99",tmpl:"Once pay 49.99",value:{}},
+      {name:"Purchase",tmpl:"af",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
   "Slots of Vegas": {
@@ -1683,10 +1684,8 @@ const GAMES = {
     events:[
       {name:"Level 10 Complete",tmpl:"level_complete_10",value:{}},
       {name:"Level 20 Complete",tmpl:"level_complete_20",value:{}},
-      {name:"Level 25 Complete",tmpl:"level_complete_25",value:{}},
       {name:"Level 40 Complete",tmpl:"level_complete_40",value:{}},
       {name:"Level 70 Complete",tmpl:"level_complete_70",value:{}},
-      {name:"Level 70 Complete",tmpl:"level_complete_90",value:{}},
       {name:"Level 100 Complete",tmpl:"level_complete_100",value:{}},
       {name:"Level 150 Complete",tmpl:"level_complete_150",value:{}},
       {name:"Level 200 Complete",tmpl:"level_complete_200",value:{}},
@@ -1694,11 +1693,8 @@ const GAMES = {
       {name:"Level 500 Complete",tmpl:"level_complete_500",value:{}},
       {name:"Level 700 Complete",tmpl:"level_complete_700",value:{}},
       {name:"Level 900 Complete",tmpl:"level_complete_900",value:{}},
-      {name:"Level 1000 Complete",tmpl:"level_complete_1000",value:{}},
       {name:"Level 1200 Complete",tmpl:"level_complete_1200",value:{}},
-      {name:"Level 1400 Complete",tmpl:"level_complete_1400",value:{}},
       {name:"Level 1600 Complete",tmpl:"level_complete_1600",value:{}},
-      {name:"Level 1800 Complete",tmpl:"level_complete_1800",value:{}},
       {name:"Level 2000 Complete",tmpl:"level_complete_2000",value:{}},
     ]
   },
@@ -1719,7 +1715,6 @@ const GAMES = {
       {name:"💰 Purchase $4.99",tmpl:"af_purchase_4.99",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
       {name:"💰 Purchase $9.99",tmpl:"af_purchase_9.99",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
       {name:"💰 Purchase $19.99",tmpl:"af_purchase_19.99",value:{"af_revenue": 19.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
-      {name:"💰 Purchase $49.99",tmpl:"af_purchase_49.99",value:{"af_revenue": 49.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
       {name:"💰 Newbie Battle Pass",tmpl:"af_zw_newbiebp_5_paid",value:{"af_revenue": 4.99, "af_currency": "USD", "af_content_id": "battle_pass"}},
     ]
   }
@@ -2440,103 +2435,6 @@ function clearLog() {
   document.getElementById('log_box').innerHTML = '<div class="log-line info">— cleared —</div>';
 }
 
-// ===== ADJUST =====
-const adjLoggedJobs = new Set();
-
-function adjClearLog() {
-  const box = document.getElementById("adj_log_box");
-  if (box) box.textContent = "";
-}
-
-function adjAddLog(data) {
-  const box = document.getElementById('adj_log_box');
-  if (!box) return;
-  const pre = document.createElement('div');
-  pre.className = 'log-line info';
-  pre.style.whiteSpace = 'pre-wrap';
-  pre.style.fontSize = '0.68rem';
-  pre.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
-  box.insertBefore(pre, box.firstChild);
-}
-
-function adjGetData() {
-  return {
-    app_token: document.getElementById('adj_app_token').value,
-    event_token: document.getElementById('adj_event_token').value,
-    device_id: document.getElementById('adj_device_id').value,
-    is_ios: document.getElementById('adj_ios').checked,
-    use_s2s: document.getElementById('adj_s2s').checked
-  };
-}
-
-async function adjCreditNow() {
-  const res = await fetch('/credit-now', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(adjGetData())
-  });
-  const data = await res.json();
-  console.log(data);
-  adjAddLog(data);
-}
-
-async function adjSchedule() {
-  await fetch('/schedule', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      ...adjGetData(),
-      hours: document.getElementById('adj_hours').value || 0,
-      minutes: document.getElementById('adj_mins').value || 0,
-      seconds: document.getElementById('adj_secs').value || 0
-    })
-  });
-}
-
-async function adjCancelJob(id) {
-  await fetch('/cancel/' + id, { method: 'POST' });
-}
-
-function adjFormat(sec) {
-  const h = Math.floor(sec/3600);
-  const m = Math.floor((sec%3600)/60);
-  const s = sec%60;
-  return h+'h '+m+'m '+s+'s';
-}
-
-async function adjLoadJobs() {
-  if (!document.getElementById('adjust-screen') || document.getElementById('adjust-screen').classList.contains('hidden')) return;
-  try {
-    const res = await fetch('/jobs');
-    const jobs = await res.json();
-    const container = document.getElementById('adj_jobs_list');
-    if (!container) return;
-
-    if (!jobs.length) { container.innerHTML = '<div class="empty-queue">no jobs</div>'; return; }
-
-    container.innerHTML = '';
-    jobs.forEach(j => {
-      const div = document.createElement('div');
-      div.className = 'queue-item ' + (j.done ? 'done' : 'pending');
-      div.innerHTML = `
-        <div class="qi-info">
-          <div class="qi-event">Job #${j.id}</div>
-          <div class="qi-tmpl">${j.done ? JSON.stringify(j.result) : adjFormat(j.remaining)}</div>
-        </div>
-        <span class="qi-status ${j.done ? 'done' : 'pending'}">${j.done ? 'done' : 'pending'}</span>
-        ${!j.done ? `<button class="qi-remove" onclick="adjCancelJob(${j.id})">×</button>` : ''}
-      `;
-      container.appendChild(div);
-
-      if (j.done && j.result && !adjLoggedJobs.has(j.id)) {
-        adjAddLog(j.result);
-        adjLoggedJobs.add(j.id);
-      }
-    });
-  } catch(e) {}
-}
-
-setInterval(adjLoadJobs, 1000);
 </script>
 </body>
 </html>
