@@ -1,4 +1,7 @@
 {
+  "crons": [
+    { "path": "/api/cron", "schedule": "* * * * *" }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
