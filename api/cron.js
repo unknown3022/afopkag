@@ -5,14 +5,15 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const url   = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   const queues = [
     'scheduler_queue_anton',
     'scheduler_queue_fano',
-    'scheduler_queue_jonas'
+    'scheduler_queue_jonas',
+    'scheduler_queue_grisha'   // ← added
   ];
 
   let totalFired = 0;
@@ -25,7 +26,9 @@ export default async function handler(req, res) {
       const data = await r.json();
       if (!data.result) continue;
 
-      let queue = JSON.parse(data.result);
+      let queue = data.result;
+      if (typeof queue === 'string') queue = JSON.parse(queue);
+      if (typeof queue === 'string') queue = JSON.parse(queue); // double-encoded guard
       if (!Array.isArray(queue) || !queue.length) continue;
 
       let changed = false;
@@ -34,30 +37,41 @@ export default async function handler(req, res) {
         if (item.status !== 'pending') continue;
         if (now < item.fireAt) continue;
 
-        // Fire the event
         item.status = 'firing';
         try {
-          const appId = item.game?.ios || item.af_id;
+          // Fix: use pkg as fallback, NOT af_id
+          const appId = item.game?.ios || item.game?.pkg;
+
+          const eventValue = item.event?.value && Object.keys(item.event.value).length
+            ? JSON.stringify(item.event.value)
+            : "";  // Fix: empty object → empty string
+
+          const eventTime = new Date().toISOString()
+            .replace('T', ' ').replace('Z', '').slice(0, 23);
+
           const payload = {
-            appsflyer_id: item.af_id,
-            customer_user_id: item.device_name || '',
-            eventName: item.event.tmpl,
-            eventValue: JSON.stringify(item.event.value || {})
+            appsflyer_id:      item.af_id,
+            customer_user_id:  item.device_name || '',
+            eventName:         item.event.tmpl,
+            eventCurrency:     "USD",
+            eventValue,
+            eventTime          // Fix: required by AppsFlyer
           };
 
           const fireRes = await fetch(`https://api2.appsflyer.com/inappevent/${appId}`, {
             method: 'POST',
             headers: {
-              'authentication': item.game.key,
-              'Content-Type': 'application/json'
+              'authentication':  item.game.key,
+              'Content-Type':    'application/json'
             },
             body: JSON.stringify(payload)
           });
 
-          item.status = fireRes.ok || fireRes.status === 200 ? 'done' : 'failed';
+          item.status = (fireRes.ok || fireRes.status === 200) ? 'done' : 'failed';
           totalFired++;
         } catch (e) {
           item.status = 'failed';
+          console.error(`Fire error for ${queueKey} item ${item.id}:`, e.message);
         }
         changed = true;
       }
