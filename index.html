@@ -746,6 +746,65 @@
     .menu-grid { grid-template-columns: 1fr; max-width: 340px; }
   }
 
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+
+    /* Timers: stack sidebar below main */
+    .timers-layout {
+      grid-template-columns: 1fr;
+    }
+    .timers-sidebar { position: static; }
+
+    /* Timer card: shrink countdown font so it doesn't overlap */
+    .tc-countdown {
+      font-size: 1.15rem;
+      letter-spacing: -0.01em;
+    }
+    .tc-countdown.done { font-size: 0.85rem; }
+
+    /* Bottom row: stack vertically instead of side-by-side */
+    .tc-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    /* Truncate long AF-IDs / device names */
+    .tc-device {
+      font-size: 0.6rem;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tc-af-id { max-width: 100%; }
+
+    /* Card top: prevent event name overflow */
+    .tc-event {
+      font-size: 0.85rem;
+      word-break: break-word;
+    }
+    .tc-game { font-size: 0.6rem; }
+
+    /* Group grid: single column */
+    .af-group-grid { grid-template-columns: 1fr; }
+
+    /* Upcoming sidebar: scrollable on mobile */
+    .timers-sidebar .card {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    /* Tab bar: smaller text */
+    .tab-btn {
+      font-size: 0.68rem;
+      padding: 0.4rem 0.8rem;
+    }
+
+    /* Scheduler layout: single column */
+    .layout { grid-template-columns: 1fr; }
+  }
+
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -961,12 +1020,15 @@
       <div class="card">
         <div class="card-label">// Update Patch Notes</div>
         <div style="font-size:0.78rem;color:var(--text2);line-height:1.8;font-family:'IBM Plex Mono',monospace">
-          <div style="color:var(--accent);font-weight:700;margin-bottom:0.4rem">v2.1 — Latest</div>
+          <div style="color:var(--accent);font-weight:700;margin-bottom:0.4rem">v2.0 — Latest</div>
           <div style="color:var(--muted);font-size:0.65rem;margin-bottom:0.5rem">Jun 2025</div>
           <div>✓ More Events added</div>
-          <div>✓ Goblin Wood</div>
-          <div>✓ Royal Match</div>
-          <div>✓ Viking Rise</div>
+          <div>✓ change AFID mid timers</div>
+          <div>✓ Background cron firing</div>
+          <div>✓ Drag & drop groups</div>
+          <div>✓ Edit timer & device name</div>
+          <div>✓ Menu — AppsFlyer, Adjust, Singular</div>
+          <div>✓ 47 games sorted alphabetically</div>
         </div>
       </div>
 
@@ -1029,7 +1091,7 @@
 
 <script>
 const GAMES = {
-  "Big Farm Mobile Harvest": {
+      "Big Farm": {
     key:"FtaT5WH9rMJjJkMd4LfBCT", pkg:"com.goodgamestudios.bigfarmmobileharvest", ios:"id1215668882",
     events:[
       {name:"Level Up 5",tmpl:"af_level5_achieved",value:{}},
@@ -1044,7 +1106,7 @@ const GAMES = {
       {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 19.99, "af_currency": "USD", "af_quantity": 1}},
     ]
   },
-    "Big Farm Homestead": {
+  "Big Farm Homestead": {
     key:"FtaT5WH9rMJjJkMd4LfBCT", pkg:"com.newmoonproduction.bigfarmhomestead", ios:"id6742455668",
     events:[
       {name:"Level Up 2",tmpl:"af_level2_achieved",value:{}},
@@ -1060,6 +1122,21 @@ const GAMES = {
       {name:"Golden Hills Homestead Level 3",tmpl:"af_bu_GoldenHillsHomestead_03",value:{}},
       {name:"Golden Hills Homestead Level 4",tmpl:"af_bu_GoldenHillsHomestead_04",value:{}},
       {name:"Golden Hills Homestead Level 5",tmpl:"af_bu_GoldenHillsHomestead_05",value:{}},
+      {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 19.99, "af_currency": "USD", "af_quantity": 1}},
+    ]
+  },
+  "Bingo Island": {
+    key:"fZvuk792H9hJQKmaTwuXxA", ios:"id1215668882",
+    events:[
+      {name:"Level Up 5",tmpl:"af_level5_achieved",value:{}},
+      {name:"Level Up 10",tmpl:"af_level10_achieved",value:{}},
+      {name:"Level Up 20",tmpl:"af_level20_achieved",value:{}},
+      {name:"Level Up 30",tmpl:"af_level30_achieved",value:{}},
+      {name:"Level Up 35",tmpl:"af_level35_achieved",value:{}},
+      {name:"Level Up 40",tmpl:"af_level40_achieved",value:{}},
+      {name:"Level Up 50",tmpl:"af_level50_achieved",value:{}},
+      {name:"Level Up 55",tmpl:"af_level55_achieved",value:{}},
+      {name:"Level Up 60",tmpl:"af_level60_achieved",value:{}},
       {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 19.99, "af_currency": "USD", "af_quantity": 1}},
     ]
   },
@@ -1287,7 +1364,7 @@ const GAMES = {
       {name:"Purchase",tmpl:"purchase_complete",value:{"af_revenue": 29.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
-    "Goblin Miner": {
+      "Goblin Miner": {
     key:"fUDvrqAnQaMcVAewAbNym5", pkg:"com.goblins.idle.merge.game", ios:"id6751527945",
     events:[
       {name:"Complete level 5",tmpl:"server_level_5",value:{}},
@@ -1304,7 +1381,7 @@ const GAMES = {
       {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
-    "Goblin Wood": {
+  "Goblin Wood": {
     key:"fUDvrqAnQaMcVAewAbNym5", pkg:"idle.goblins.wood.tycoon", ios:"id6446766326",
     events:[
       {name:"Complete level 6",tmpl:"server_level_5",value:{}},
@@ -1546,18 +1623,17 @@ const GAMES = {
       {name:"Purchase of $15",tmpl:"af_purchase_15",value:{}},
       {name:"Purchase of $50",tmpl:"af_purchase_50",value:{}},
       {name:"Purchase",tmpl:"af_purchase",value:{"af_revenue": 10.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
-      {name:"Dragon Power 50",tmpl:"event_50_dragon_power",value:{}},
+      {name:"Reach Level 5",tmpl:"event_level_5_complete",value:{}},
+      {name:"Reach Level 10",tmpl:"event_level_10_complete",value:{}},
+      {name:"Dragon Power 5",tmpl:"event_5_dragon_power",value:{}},
+      {name:"Dragon Power 15",tmpl:"event_15_dragon_power",value:{}},
+      {name:"Dragon Power 30",tmpl:"event_30_dragon_power",value:{}},
       {name:"Dragon Power 70",tmpl:"event_70_dragon_power",value:{}},
       {name:"Dragon Power 100",tmpl:"event_100_dragon_power",value:{}},
       {name:"Dragon Power 150",tmpl:"event_150_dragon_power",value:{}},
       {name:"Dragon Power 300",tmpl:"event_300_dragon_power",value:{}},
-      {name:"Dragon Power 450",tmpl:"event_450_dragon_power",value:{}},
       {name:"Dragon Power 750",tmpl:"event_750_dragon_power",value:{}},
       {name:"Dragon Power 1000",tmpl:"event_1000_dragon_power",value:{}},
-      {name:"Dragon Power 2000",tmpl:"event_2000_dragon_power",value:{}},
-      {name:"Dragon Power 3000",tmpl:"event_3000_dragon_power",value:{}},
-      {name:"Dragon Power 4000",tmpl:"event_4000_dragon_power",value:{}},
-      {name:"Dragon Power 5000",tmpl:"event_5000_dragon_power",value:{}},
     ]
   },
   "Mu: Dark Epoch": {
@@ -2954,6 +3030,55 @@ function clearLog() {
 
 <script>
 const GAMES = {
+      "Big Farm": {
+    key:"FtaT5WH9rMJjJkMd4LfBCT", pkg:"com.goodgamestudios.bigfarmmobileharvest", ios:"id1215668882",
+    events:[
+      {name:"Level Up 5",tmpl:"af_level5_achieved",value:{}},
+      {name:"Level Up 10",tmpl:"af_level10_achieved",value:{}},
+      {name:"Level Up 20",tmpl:"af_level20_achieved",value:{}},
+      {name:"Level Up 30",tmpl:"af_level30_achieved",value:{}},
+      {name:"Level Up 35",tmpl:"af_level35_achieved",value:{}},
+      {name:"Level Up 40",tmpl:"af_level40_achieved",value:{}},
+      {name:"Level Up 50",tmpl:"af_level50_achieved",value:{}},
+      {name:"Level Up 55",tmpl:"af_level55_achieved",value:{}},
+      {name:"Level Up 60",tmpl:"af_level60_achieved",value:{}},
+      {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 19.99, "af_currency": "USD", "af_quantity": 1}},
+    ]
+  },
+  "Big Farm Homestead": {
+    key:"FtaT5WH9rMJjJkMd4LfBCT", pkg:"com.newmoonproduction.bigfarmhomestead", ios:"id6742455668",
+    events:[
+      {name:"Level Up 2",tmpl:"af_level2_achieved",value:{}},
+      {name:"Level Up 5",tmpl:"af_level5_achieved",value:{}},
+      {name:"Level Up 10",tmpl:"af_level10_achieved",value:{}},
+      {name:"Level Up 15",tmpl:"af_level15_achieved",value:{}},
+      {name:"Level Up 20",tmpl:"af_level20_achieved",value:{}},
+      {name:"Level Up 22",tmpl:"af_level22_achieved",value:{}},
+      {name:"Level Up 30",tmpl:"af_level30_achieved",value:{}},
+      {name:"Level Up 35",tmpl:"af_level35_achieved",value:{}},
+      {name:"Level Up 40",tmpl:"af_level40_achieved",value:{}},
+      {name:"Level Up 50",tmpl:"af_level50_achieved",value:{}},
+      {name:"Golden Hills Homestead Level 3",tmpl:"af_bu_GoldenHillsHomestead_03",value:{}},
+      {name:"Golden Hills Homestead Level 4",tmpl:"af_bu_GoldenHillsHomestead_04",value:{}},
+      {name:"Golden Hills Homestead Level 5",tmpl:"af_bu_GoldenHillsHomestead_05",value:{}},
+      {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 19.99, "af_currency": "USD", "af_quantity": 1}},
+    ]
+  },
+  "Bingo Island": {
+    key:"fZvuk792H9hJQKmaTwuXxA", ios:"id1215668882",
+    events:[
+      {name:"Level Up 5",tmpl:"af_level5_achieved",value:{}},
+      {name:"Level Up 10",tmpl:"af_level10_achieved",value:{}},
+      {name:"Level Up 20",tmpl:"af_level20_achieved",value:{}},
+      {name:"Level Up 30",tmpl:"af_level30_achieved",value:{}},
+      {name:"Level Up 35",tmpl:"af_level35_achieved",value:{}},
+      {name:"Level Up 40",tmpl:"af_level40_achieved",value:{}},
+      {name:"Level Up 50",tmpl:"af_level50_achieved",value:{}},
+      {name:"Level Up 55",tmpl:"af_level55_achieved",value:{}},
+      {name:"Level Up 60",tmpl:"af_level60_achieved",value:{}},
+      {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 19.99, "af_currency": "USD", "af_quantity": 1}},
+    ]
+  },
   "Bingo Island": {
     key:"fZvuk792H9hJQKmaTwuXxA", pkg:"com.bingo.island", ios:"id1577149475",
     events:[
@@ -3170,7 +3295,24 @@ const GAMES = {
       {name:"Purchase",tmpl:"purchase_complete",value:{"af_revenue": 29.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
     ]
   },
-    "Goblin Wood": {
+      "Goblin Miner": {
+    key:"fUDvrqAnQaMcVAewAbNym5", pkg:"com.goblins.idle.merge.game", ios:"id6751527945",
+    events:[
+      {name:"Complete level 5",tmpl:"server_level_5",value:{}},
+      {name:"Complete level 10",tmpl:"server_level_10",value:{}},
+      {name:"Complete level 15",tmpl:"server_level_15",value:{}},
+      {name:"Complete level 20",tmpl:"server_level_20",value:{}},
+      {name:"Complete level 25",tmpl:"server_level_25",value:{}},
+      {name:"Complete level 30",tmpl:"server_level_30",value:{}},
+      {name:"Complete level 40",tmpl:"server_level_40",value:{}},
+      {name:"Complete level 45",tmpl:"server_level_45",value:{}},
+      {name:"Complete level 55",tmpl:"server_level_55",value:{}},
+      {name:"Complete level 65",tmpl:"server_level_65",value:{}},
+      {name:"Complete level 80",tmpl:"server_level_80",value:{}},
+      {name:"💰 Purchase",tmpl:"af_purchase",value:{"af_revenue": 9.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
+    ]
+  },
+  "Goblin Wood": {
     key:"fUDvrqAnQaMcVAewAbNym5", pkg:"idle.goblins.wood.tycoon", ios:"id6446766326",
     events:[
       {name:"Complete level 6",tmpl:"server_level_5",value:{}},
@@ -3413,18 +3555,17 @@ const GAMES = {
       {name:"Purchase of $15",tmpl:"af_purchase_15",value:{}},
       {name:"Purchase of $50",tmpl:"af_purchase_50",value:{}},
       {name:"Purchase",tmpl:"af_purchase",value:{"af_revenue": 10.99, "af_currency": "USD", "af_content_id": "iap_pack"}},
-      {name:"Dragon Power 50",tmpl:"event_50_dragon_power",value:{}},
+      {name:"Reach Level 5",tmpl:"event_level_5_complete",value:{}},
+      {name:"Reach Level 10",tmpl:"event_level_10_complete",value:{}},
+      {name:"Dragon Power 5",tmpl:"event_5_dragon_power",value:{}},
+      {name:"Dragon Power 15",tmpl:"event_15_dragon_power",value:{}},
+      {name:"Dragon Power 30",tmpl:"event_30_dragon_power",value:{}},
       {name:"Dragon Power 70",tmpl:"event_70_dragon_power",value:{}},
       {name:"Dragon Power 100",tmpl:"event_100_dragon_power",value:{}},
       {name:"Dragon Power 150",tmpl:"event_150_dragon_power",value:{}},
       {name:"Dragon Power 300",tmpl:"event_300_dragon_power",value:{}},
-      {name:"Dragon Power 450",tmpl:"event_450_dragon_power",value:{}},
       {name:"Dragon Power 750",tmpl:"event_750_dragon_power",value:{}},
       {name:"Dragon Power 1000",tmpl:"event_1000_dragon_power",value:{}},
-      {name:"Dragon Power 2000",tmpl:"event_2000_dragon_power",value:{}},
-      {name:"Dragon Power 3000",tmpl:"event_3000_dragon_power",value:{}},
-      {name:"Dragon Power 4000",tmpl:"event_4000_dragon_power",value:{}},
-      {name:"Dragon Power 5000",tmpl:"event_5000_dragon_power",value:{}},
     ]
   },
   "Mu: Dark Epoch": {
