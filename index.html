@@ -459,6 +459,41 @@
     color: var(--muted);
     font-weight: 400;
   }
+  .af-id-copyable {
+    cursor: pointer;
+    border-bottom: 1px dashed transparent;
+    transition: all 0.15s;
+  }
+  .af-id-copyable:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .af-id-copied { color: var(--success) !important; border-bottom-color: var(--success) !important; }
+  /* Torox row */
+  .torox-row {
+    display: flex; align-items: center; gap: 0.4rem; margin-top: 0.3rem;
+  }
+  .torox-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+    color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0;
+  }
+  .torox-arrow { font-size: 0.7rem; color: var(--accent); flex-shrink: 0; }
+  .torox-display {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: white;
+    cursor: pointer; border-bottom: 1px dashed transparent;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;
+    transition: all 0.15s;
+  }
+  .torox-display:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .torox-display.empty { color: var(--muted); font-style: italic; }
+  .torox-input {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+    background: var(--surface); border: 1px solid var(--accent);
+    border-radius: 6px; color: var(--text); padding: 0.2rem 0.5rem;
+    outline: none; width: 200px;
+  }
+  .torox-link {
+    font-size: 0.8rem; color: var(--accent); text-decoration: none;
+    flex-shrink: 0; opacity: 0.8; transition: opacity 0.15s;
+  }
+  .torox-link:hover { opacity: 1; }
   .tc-af-id {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.62rem;
@@ -2609,6 +2644,58 @@ function startGroupNameEdit(afId) {
   input.addEventListener('mousedown', e => e.stopPropagation());
 }
 
+// ===== COPY AF-ID =====
+function copyAfId(afId, el) {
+  navigator.clipboard.writeText(afId).then(() => {
+    el.classList.add('af-id-copied');
+    const orig = el.textContent;
+    el.textContent = '✓ copied!';
+    setTimeout(() => { el.textContent = orig; el.classList.remove('af-id-copied'); }, 1500);
+  });
+}
+
+// ===== TOROX URLS =====
+let toroxUrls = {};
+function getToroxKey() { return 'torox_urls_' + (dbKey || 'default'); }
+function loadToroxUrls() {
+  try { toroxUrls = JSON.parse(localStorage.getItem(getToroxKey()) || '{}'); } catch(e) { toroxUrls = {}; }
+}
+function saveToroxUrls() { localStorage.setItem(getToroxKey(), JSON.stringify(toroxUrls)); }
+
+function startToroxEdit(afId) {
+  const safeId = afId.replace(/[^a-z0-9]/gi, '_');
+  const row = document.getElementById('torox-row-' + safeId);
+  if (!row) return;
+  const currentUrl = toroxUrls[afId] || '';
+  row.innerHTML = `
+    <span class="torox-label">Torox</span>
+    <span class="torox-arrow">→</span>
+    <input class="torox-input" id="torox-input-${safeId}"
+      value="${currentUrl}" placeholder="https://torox.io/..."
+      onkeydown="if(event.key==='Enter')saveToroxUrl('${afId}');if(event.key==='Escape')renderToroxRow('${afId}');"
+      onblur="saveToroxUrl('${afId}')">
+  `;
+  setTimeout(() => { const inp = document.getElementById('torox-input-' + safeId); if(inp) inp.focus(); }, 10);
+}
+function saveToroxUrl(afId) {
+  const safeId = afId.replace(/[^a-z0-9]/gi, '_');
+  const inp = document.getElementById('torox-input-' + safeId);
+  if (!inp) return;
+  const val = inp.value.trim();
+  if (val) toroxUrls[afId] = val; else delete toroxUrls[afId];
+  saveToroxUrls();
+  renderToroxRow(afId);
+}
+function renderToroxRow(afId) {
+  const safeId = afId.replace(/[^a-z0-9]/gi, '_');
+  const row = document.getElementById('torox-row-' + safeId);
+  if (!row) return;
+  const url = toroxUrls[afId] || '';
+  row.innerHTML = url
+    ? `<span class="torox-label">Torox</span><span class="torox-arrow">→</span><span class="torox-display" onclick="startToroxEdit('${afId}')" title="Click to edit">${url}</span><a class="torox-link" href="${url}" target="_blank" title="Open">↗</a>`
+    : `<span class="torox-label">Torox</span><span class="torox-arrow">→</span><span class="torox-display empty" onclick="startToroxEdit('${afId}')">add url…</span>`;
+}
+
 // ===== GROUP ORDER (drag) =====
 let groupOrder = []; // array of afId keys in display order
 
@@ -2771,8 +2858,13 @@ function renderTimersTab() {
                 title="Click to rename">
                 ${items[0].device_name || afId}
               </span>
-              <span class="af-group-afid">${items[0].device_name ? ' ('+afId+')' : ''}</span>
+              <span class="af-group-afid">
+                ${items[0].device_name
+                  ? ' (<span class="af-id-copyable" onclick="event.stopPropagation();copyAfId(\'' + afId + '\',this)" title="Click to copy">' + afId + '</span>)'
+                  : ''}
+              </span>
             </div>
+            <div class="torox-row" id="torox-row-${afId.replace(/[^a-z0-9]/gi,'_')}"></div>
             <div class="af-group-meta">${items.length} event${items.length !== 1 ? 's' : ''}</div>
           </div>
           <div class="af-group-counts">${pills}</div>
@@ -2783,6 +2875,10 @@ function renderTimersTab() {
       </div>
     `;
   }).join('');
+
+  // Init torox rows after render
+  loadToroxUrls();
+  displayOrder.forEach(afId => renderToroxRow(afId));
 }
 
 // ===== CLOCK =====
@@ -4703,8 +4799,13 @@ function renderTimersTab() {
                 title="Click to rename">
                 ${items[0].device_name || afId}
               </span>
-              <span class="af-group-afid">${items[0].device_name ? ' ('+afId+')' : ''}</span>
+              <span class="af-group-afid">
+                ${items[0].device_name
+                  ? ' (<span class="af-id-copyable" onclick="event.stopPropagation();copyAfId(\'' + afId + '\',this)" title="Click to copy">' + afId + '</span>)'
+                  : ''}
+              </span>
             </div>
+            <div class="torox-row" id="torox-row-${afId.replace(/[^a-z0-9]/gi,'_')}"></div>
             <div class="af-group-meta">${items.length} event${items.length !== 1 ? 's' : ''}</div>
           </div>
           <div class="af-group-counts">${pills}</div>
@@ -4715,6 +4816,10 @@ function renderTimersTab() {
       </div>
     `;
   }).join('');
+
+  // Init torox rows after render
+  loadToroxUrls();
+  displayOrder.forEach(afId => renderToroxRow(afId));
 }
 
 // ===== CLOCK =====
