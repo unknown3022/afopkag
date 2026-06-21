@@ -1273,11 +1273,17 @@ const GAMES = {
     events:[
       {"name": "Restore Kingdom 1", "tmpl": "af_kingdom_1_restored", "value": {}},
       {"name": "Restore Kingdom 5", "tmpl": "af_kingdom_5_restored", "value": {}},
+      {"name": "Restore Kingdom 8", "tmpl": "af_kingdom_8_restored", "value": {}},
       {"name": "Restore Kingdom 10", "tmpl": "af_kingdom_10_restored", "value": {}},
+      {"name": "Restore Kingdom 12", "tmpl": "af_kingdom_12_restored", "value": {}},
+      {"name": "Restore Kingdom 15", "tmpl": "af_kingdom_15_restored", "value": {}},
+      {"name": "Restore Kingdom 18", "tmpl": "af_kingdom_18_restored", "value": {}},
       {"name": "Restore Kingdom 20", "tmpl": "af_kingdom_20_restored", "value": {}},
+      {"name": "Restore Kingdom 22", "tmpl": "af_kingdom_22_restored", "value": {}},
       {"name": "Restore Kingdom 25", "tmpl": "af_kingdom_25_restored", "value": {}},
       {"name": "Restore Kingdom 29", "tmpl": "af_kingdom_29_restored", "value": {}},
       {"name": "Restore Kingdom 30", "tmpl": "af_kingdom_30_restored", "value": {}},
+      {"name": "Restore Kingdom 35", "tmpl": "af_kingdom_35_restored", "value": {}},
       {"name": "Restore Kingdom 40", "tmpl": "af_kingdom_40_restored", "value": {}},
       {"name": "Restore Kingdom 45", "tmpl": "af_kingdom_45_restored", "value": {}},
       {"name": "Restore Kingdom 50", "tmpl": "af_kingdom_50_restored", "value": {}},
@@ -2370,41 +2376,17 @@ async function syncQueue() {
       headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
     });
     const data = await r.json();
-    let loaded = data.result ? JSON.parse(data.result) : [];
-    if (typeof loaded === 'string') loaded = JSON.parse(loaded);
-    if (!Array.isArray(loaded)) return;
-
-    let changed = false;
-
-    // Update status of existing items (cron may have fired them)
-    queue.forEach(local => {
-      const remote = loaded.find(r => r.id === local.id);
-      if (remote && remote.status !== local.status) {
-        // Don't overwrite firing/done/failed with older remote status
-        const rank = { pending: 0, firing: 1, done: 2, failed: 2 };
-        if ((rank[remote.status] || 0) > (rank[local.status] || 0)) {
-          if (remote.status === 'done' || remote.status === 'failed') {
-            log(`✓ Cron fired [${local.gameName}] ${local.event.tmpl} → ${remote.status}`, remote.status === 'done' ? 'success' : 'error');
-          }
-          local.status = remote.status;
-          changed = true;
-        }
+    const loaded = data.result ? JSON.parse(data.result) : [];
+    if (Array.isArray(loaded)) {
+      const localIds = new Set(queue.map(i => i.id));
+      const newItems = loaded.filter(i => !localIds.has(i.id));
+      if (newItems.length) {
+        queue = [...queue, ...newItems];
+        renderQueue();
+        renderTimersTab();
+        updateBadge();
+        log(`Synced ${newItems.length} new item(s) from another session`, 'info');
       }
-    });
-
-    // Add new items from other sessions
-    const localIds = new Set(queue.map(i => i.id));
-    const newItems = loaded.filter(i => !localIds.has(i.id));
-    if (newItems.length) {
-      queue = [...queue, ...newItems];
-      changed = true;
-      log(`Synced ${newItems.length} new item(s) from another session`, 'info');
-    }
-
-    if (changed) {
-      renderQueue();
-      renderTimersTab();
-      updateBadge();
     }
   } catch(e) {}
 }
@@ -2444,8 +2426,7 @@ function tickAll() {
   queue.forEach(item => {
     if (item.status !== 'pending') return;
     if (now >= item.fireAt) {
-      // Don't set 'firing' here — let doFire set it after saving
-      // so cron can still pick it up if browser closes mid-fire
+      item.status = 'firing';
       doFire(item.af_id, item.device_name, item.game, item.event, item.gameName, item);
     }
   });
@@ -2454,7 +2435,6 @@ function tickAll() {
 }
 
 async function doFire(af_id, device_name, game, event, gameName, queueItem) {
-  if (queueItem) { queueItem.status = 'firing'; await saveQueue(); }
   const appId = platform === 'ios' ? game.ios : game.pkg;
   const now = new Date().toISOString().replace('T',' ').replace('Z','').slice(0,23);
   const payload = {
@@ -3298,11 +3278,17 @@ const GAMES = {
     events:[
       {"name": "Restore Kingdom 1", "tmpl": "af_kingdom_1_restored", "value": {}},
       {"name": "Restore Kingdom 5", "tmpl": "af_kingdom_5_restored", "value": {}},
+      {"name": "Restore Kingdom 8", "tmpl": "af_kingdom_8_restored", "value": {}},
       {"name": "Restore Kingdom 10", "tmpl": "af_kingdom_10_restored", "value": {}},
+      {"name": "Restore Kingdom 12", "tmpl": "af_kingdom_12_restored", "value": {}},
+      {"name": "Restore Kingdom 15", "tmpl": "af_kingdom_15_restored", "value": {}},
+      {"name": "Restore Kingdom 18", "tmpl": "af_kingdom_18_restored", "value": {}},
       {"name": "Restore Kingdom 20", "tmpl": "af_kingdom_20_restored", "value": {}},
+      {"name": "Restore Kingdom 22", "tmpl": "af_kingdom_22_restored", "value": {}},
       {"name": "Restore Kingdom 25", "tmpl": "af_kingdom_25_restored", "value": {}},
       {"name": "Restore Kingdom 29", "tmpl": "af_kingdom_29_restored", "value": {}},
       {"name": "Restore Kingdom 30", "tmpl": "af_kingdom_30_restored", "value": {}},
+      {"name": "Restore Kingdom 35", "tmpl": "af_kingdom_35_restored", "value": {}},
       {"name": "Restore Kingdom 40", "tmpl": "af_kingdom_40_restored", "value": {}},
       {"name": "Restore Kingdom 45", "tmpl": "af_kingdom_45_restored", "value": {}},
       {"name": "Restore Kingdom 50", "tmpl": "af_kingdom_50_restored", "value": {}},
@@ -4389,41 +4375,17 @@ async function syncQueue() {
       headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
     });
     const data = await r.json();
-    let loaded = data.result ? JSON.parse(data.result) : [];
-    if (typeof loaded === 'string') loaded = JSON.parse(loaded);
-    if (!Array.isArray(loaded)) return;
-
-    let changed = false;
-
-    // Update status of existing items (cron may have fired them)
-    queue.forEach(local => {
-      const remote = loaded.find(r => r.id === local.id);
-      if (remote && remote.status !== local.status) {
-        // Don't overwrite firing/done/failed with older remote status
-        const rank = { pending: 0, firing: 1, done: 2, failed: 2 };
-        if ((rank[remote.status] || 0) > (rank[local.status] || 0)) {
-          if (remote.status === 'done' || remote.status === 'failed') {
-            log(`✓ Cron fired [${local.gameName}] ${local.event.tmpl} → ${remote.status}`, remote.status === 'done' ? 'success' : 'error');
-          }
-          local.status = remote.status;
-          changed = true;
-        }
+    const loaded = data.result ? JSON.parse(data.result) : [];
+    if (Array.isArray(loaded)) {
+      const localIds = new Set(queue.map(i => i.id));
+      const newItems = loaded.filter(i => !localIds.has(i.id));
+      if (newItems.length) {
+        queue = [...queue, ...newItems];
+        renderQueue();
+        renderTimersTab();
+        updateBadge();
+        log(`Synced ${newItems.length} new item(s) from another session`, 'info');
       }
-    });
-
-    // Add new items from other sessions
-    const localIds = new Set(queue.map(i => i.id));
-    const newItems = loaded.filter(i => !localIds.has(i.id));
-    if (newItems.length) {
-      queue = [...queue, ...newItems];
-      changed = true;
-      log(`Synced ${newItems.length} new item(s) from another session`, 'info');
-    }
-
-    if (changed) {
-      renderQueue();
-      renderTimersTab();
-      updateBadge();
     }
   } catch(e) {}
 }
@@ -4463,8 +4425,7 @@ function tickAll() {
   queue.forEach(item => {
     if (item.status !== 'pending') return;
     if (now >= item.fireAt) {
-      // Don't set 'firing' here — let doFire set it after saving
-      // so cron can still pick it up if browser closes mid-fire
+      item.status = 'firing';
       doFire(item.af_id, item.device_name, item.game, item.event, item.gameName, item);
     }
   });
@@ -4473,7 +4434,6 @@ function tickAll() {
 }
 
 async function doFire(af_id, device_name, game, event, gameName, queueItem) {
-  if (queueItem) { queueItem.status = 'firing'; await saveQueue(); }
   const appId = platform === 'ios' ? game.ios : game.pkg;
   const now = new Date().toISOString().replace('T',' ').replace('Z','').slice(0,23);
   const payload = {
