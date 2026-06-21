@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Verify it's called by Vercel Cron
   const authHeader = req.headers['authorization'];
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -8,11 +7,6 @@ export default async function handler(req, res) {
   const url   = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
-
-  // Use own domain so requests go through whitelisted IP
-  const BASE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'https://akkkkkkkwayss.vercel.app';
 
   const queues = [
     'scheduler_queue_anton',
@@ -38,19 +32,19 @@ export default async function handler(req, res) {
       let changed = false;
 
       for (const item of queue) {
-        if (item.status !== 'pending') continue;
-        if (now < item.fireAt) continue;
+        // Pick up 'pending' items that are due
+        // Also pick up 'firing' items older than 2min (browser closed mid-fire)
+        const isPending = item.status === 'pending' && now >= item.fireAt;
+        const isStale   = item.status === 'firing'  && now >= item.fireAt + 2 * 60 * 1000;
+
+        if (!isPending && !isStale) continue;
 
         item.status = 'firing';
         try {
           const appId = item.game?.ios || item.game?.pkg;
-
           const eventValue = item.event?.value && Object.keys(item.event.value).length
-            ? JSON.stringify(item.event.value)
-            : "";
-
-          const eventTime = new Date().toISOString()
-            .replace('T', ' ').replace('Z', '').slice(0, 23);
+            ? JSON.stringify(item.event.value) : "";
+          const eventTime = new Date().toISOString().replace('T',' ').replace('Z','').slice(0,23);
 
           const payload = {
             appsflyer_id:     item.af_id,
@@ -61,13 +55,9 @@ export default async function handler(req, res) {
             eventTime
           };
 
-          // Route through /api/proxy so it uses the whitelisted IP
-          const fireRes = await fetch(`${BASE_URL}/api/proxy?appId=${appId}`, {
+          const fireRes = await fetch(`https://api2.appsflyer.com/inappevent/${appId}`, {
             method: 'POST',
-            headers: {
-              'authentication': item.game.key,
-              'Content-Type': 'application/json'
-            },
+            headers: { 'authentication': item.game.key, 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
 
