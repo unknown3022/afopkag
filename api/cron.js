@@ -9,6 +9,19 @@ export default async function handler(req, res) {
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
+  const parseQueue = (value) => {
+    let queue = value || [];
+    if (typeof queue === 'string') queue = JSON.parse(queue);
+    if (typeof queue === 'string') queue = JSON.parse(queue);
+    return Array.isArray(queue) ? queue : [];
+  };
+
+  const saveQueue = (queueKey, queue) => fetch(`${url}/set/${queueKey}`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(JSON.stringify(queue))
+  });
+
   const queues = [
     'scheduler_queue_anton',
     'scheduler_queue_fano',
@@ -26,9 +39,7 @@ export default async function handler(req, res) {
       const data = await r.json();
       if (!data.result) continue;
 
-      let queue = data.result;
-      if (typeof queue === 'string') queue = JSON.parse(queue);
-      if (typeof queue === 'string') queue = JSON.parse(queue); // double-encoded guard
+      let queue = parseQueue(data.result);
       if (!Array.isArray(queue) || !queue.length) continue;
 
       let changed = false;
@@ -38,13 +49,16 @@ export default async function handler(req, res) {
         if (now < item.fireAt) continue;
 
         item.status = 'firing';
+        item.updatedAt = new Date().toISOString();
+        await saveQueue(queueKey, queue);
+
         try {
-          // Fix: use pkg as fallback, NOT af_id
-          const appId = item.game?.ios || item.game?.pkg;
+          const appId = item.appId || (item.platform === 'android' ? item.game?.pkg : item.game?.ios) || item.game?.pkg;
+          if (!appId) throw new Error('Missing app ID for scheduled event');
 
           const eventValue = item.event?.value && Object.keys(item.event.value).length
             ? JSON.stringify(item.event.value)
-            : "";  // Fix: empty object → empty string
+            : "";
 
           const eventTime = new Date().toISOString()
             .replace('T', ' ').replace('Z', '').slice(0, 23);
@@ -55,7 +69,7 @@ export default async function handler(req, res) {
             eventName:         item.event.tmpl,
             eventCurrency:     "USD",
             eventValue,
-            eventTime          // Fix: required by AppsFlyer
+            eventTime
           };
 
           const fireRes = await fetch(`https://api2.appsflyer.com/inappevent/${appId}`, {
@@ -67,10 +81,19 @@ export default async function handler(req, res) {
             body: JSON.stringify(payload)
           });
 
-          item.status = (fireRes.ok || fireRes.status === 200) ? 'done' : 'failed';
+          const responseText = await fireRes.text();
+          item.status = fireRes.ok ? 'done' : 'failed';
+          item.firedAt = new Date().toISOString();
+          item.result = {
+            status: fireRes.status,
+            body: responseText.slice(0, 1000)
+          };
+          delete item.error;
           totalFired++;
         } catch (e) {
           item.status = 'failed';
+          item.firedAt = new Date().toISOString();
+          item.error = e.message;
           console.error(`Fire error for ${queueKey} item ${item.id}:`, e.message);
         }
         changed = true;
@@ -78,11 +101,7 @@ export default async function handler(req, res) {
 
       // Save back if anything changed
       if (changed) {
-        await fetch(`${url}/set/${queueKey}`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(JSON.stringify(queue))
-        });
+        await saveQueue(queueKey, queue);
       }
     } catch (e) {
       console.error(`Error processing ${queueKey}:`, e.message);
