@@ -8,6 +8,8 @@ export default async function handler(req, res) {
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
+  const PROXY_URL = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL || 'akkkkkkkwayss.vercel.app'}/api/proxy`;
+
   const queues = [
     'scheduler_queue_anton',
     'scheduler_queue_fano',
@@ -32,11 +34,8 @@ export default async function handler(req, res) {
       let changed = false;
 
       for (const item of queue) {
-        // Pick up 'pending' items that are due
-        // Also pick up 'firing' items older than 2min (browser closed mid-fire)
         const isPending = item.status === 'pending' && now >= item.fireAt;
         const isStale   = item.status === 'firing'  && now >= item.fireAt + 2 * 60 * 1000;
-
         if (!isPending && !isStale) continue;
 
         item.status = 'firing';
@@ -55,9 +54,13 @@ export default async function handler(req, res) {
             eventTime
           };
 
-          const fireRes = await fetch(`https://api2.appsflyer.com/inappevent/${appId}`, {
+          // Use proxy — same path as browser
+          const fireRes = await fetch(`${PROXY_URL}?appId=${appId}`, {
             method: 'POST',
-            headers: { 'authentication': item.game.key, 'Content-Type': 'application/json' },
+            headers: {
+              'authentication': item.game.key,
+              'Content-Type': 'application/json'
+            },
             body: JSON.stringify(payload)
           });
 
@@ -65,7 +68,7 @@ export default async function handler(req, res) {
           totalFired++;
         } catch (e) {
           item.status = 'failed';
-          console.error(`Fire error for ${queueKey} item ${item.id}:`, e.message);
+          console.error(`Fire error ${item.id}:`, e.message);
         }
         changed = true;
       }
