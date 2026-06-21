@@ -2444,7 +2444,8 @@ function tickAll() {
   queue.forEach(item => {
     if (item.status !== 'pending') return;
     if (now >= item.fireAt) {
-      item.status = 'firing';
+      // Don't set 'firing' here — let doFire set it after saving
+      // so cron can still pick it up if browser closes mid-fire
       doFire(item.af_id, item.device_name, item.game, item.event, item.gameName, item);
     }
   });
@@ -2453,6 +2454,7 @@ function tickAll() {
 }
 
 async function doFire(af_id, device_name, game, event, gameName, queueItem) {
+  if (queueItem) { queueItem.status = 'firing'; await saveQueue(); }
   const appId = platform === 'ios' ? game.ios : game.pkg;
   const now = new Date().toISOString().replace('T',' ').replace('Z','').slice(0,23);
   const payload = {
@@ -4461,7 +4463,8 @@ function tickAll() {
   queue.forEach(item => {
     if (item.status !== 'pending') return;
     if (now >= item.fireAt) {
-      item.status = 'firing';
+      // Don't set 'firing' here — let doFire set it after saving
+      // so cron can still pick it up if browser closes mid-fire
       doFire(item.af_id, item.device_name, item.game, item.event, item.gameName, item);
     }
   });
@@ -4470,6 +4473,7 @@ function tickAll() {
 }
 
 async function doFire(af_id, device_name, game, event, gameName, queueItem) {
+  if (queueItem) { queueItem.status = 'firing'; await saveQueue(); }
   const appId = platform === 'ios' ? game.ios : game.pkg;
   const now = new Date().toISOString().replace('T',' ').replace('Z','').slice(0,23);
   const payload = {
