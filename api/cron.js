@@ -8,6 +8,7 @@ export default async function handler(req, res) {
   const url   = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+  const MAX_LOGS = 300;
 
   const parseQueue = (value) => {
     let queue = value || [];
@@ -20,6 +21,42 @@ export default async function handler(req, res) {
     method: 'POST',
     headers,
     body: JSON.stringify(JSON.stringify(queue))
+  });
+
+  const logKeyForQueue = (queueKey) => queueKey.replace('scheduler_queue_', 'scheduler_logs_');
+
+  const readLogs = async (logKey) => {
+    const response = await fetch(`${url}/get/${logKey}`, { headers });
+    const data = await response.json();
+    let logs = data.result || [];
+    if (typeof logs === 'string') logs = JSON.parse(logs);
+    if (typeof logs === 'string') logs = JSON.parse(logs);
+    return Array.isArray(logs) ? logs : [];
+  };
+
+  const saveLogs = (logKey, logs) => fetch(`${url}/set/${logKey}`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(JSON.stringify(logs.slice(-MAX_LOGS)))
+  });
+
+  const describeItem = (item) => {
+    const device = item.device_name || item.af_id || 'unknown device';
+    const event = item.event?.name || item.event?.tmpl || 'unknown event';
+    return `[${item.gameName || 'unknown game'}] ${event} (${device})`;
+  };
+
+  const newLog = (type, message, item) => ({
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+    ts: new Date().toISOString(),
+    type,
+    message,
+    itemId: item?.id,
+    gameName: item?.gameName,
+    eventName: item?.event?.name,
+    eventTemplate: item?.event?.tmpl,
+    af_id: item?.af_id,
+    device_name: item?.device_name || ''
   });
 
   const queues = [
@@ -43,6 +80,7 @@ export default async function handler(req, res) {
       if (!Array.isArray(queue) || !queue.length) continue;
 
       let changed = false;
+      const cronLogs = [];
 
       for (const item of queue) {
         if (item.status !== 'pending') continue;
@@ -50,6 +88,7 @@ export default async function handler(req, res) {
 
         item.status = 'firing';
         item.updatedAt = new Date().toISOString();
+        cronLogs.push(newLog('warn', `Cron firing ${describeItem(item)}`, item));
         await saveQueue(queueKey, queue);
 
         try {
@@ -89,11 +128,13 @@ export default async function handler(req, res) {
             body: responseText.slice(0, 1000)
           };
           delete item.error;
+          cronLogs.push(newLog(item.status === 'done' ? 'success' : 'error', `Cron ${item.status}: ${describeItem(item)} [${fireRes.status}]`, item));
           totalFired++;
         } catch (e) {
           item.status = 'failed';
           item.firedAt = new Date().toISOString();
           item.error = e.message;
+          cronLogs.push(newLog('error', `Cron failed: ${describeItem(item)} - ${e.message}`, item));
           console.error(`Fire error for ${queueKey} item ${item.id}:`, e.message);
         }
         changed = true;
@@ -102,6 +143,11 @@ export default async function handler(req, res) {
       // Save back if anything changed
       if (changed) {
         await saveQueue(queueKey, queue);
+        if (cronLogs.length) {
+          const logKey = logKeyForQueue(queueKey);
+          const existingLogs = await readLogs(logKey);
+          await saveLogs(logKey, [...existingLogs, ...cronLogs]);
+        }
       }
     } catch (e) {
       console.error(`Error processing ${queueKey}:`, e.message);
