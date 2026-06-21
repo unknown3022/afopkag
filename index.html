@@ -1273,17 +1273,11 @@ const GAMES = {
     events:[
       {"name": "Restore Kingdom 1", "tmpl": "af_kingdom_1_restored", "value": {}},
       {"name": "Restore Kingdom 5", "tmpl": "af_kingdom_5_restored", "value": {}},
-      {"name": "Restore Kingdom 8", "tmpl": "af_kingdom_8_restored", "value": {}},
       {"name": "Restore Kingdom 10", "tmpl": "af_kingdom_10_restored", "value": {}},
-      {"name": "Restore Kingdom 12", "tmpl": "af_kingdom_12_restored", "value": {}},
-      {"name": "Restore Kingdom 15", "tmpl": "af_kingdom_15_restored", "value": {}},
-      {"name": "Restore Kingdom 18", "tmpl": "af_kingdom_18_restored", "value": {}},
       {"name": "Restore Kingdom 20", "tmpl": "af_kingdom_20_restored", "value": {}},
-      {"name": "Restore Kingdom 22", "tmpl": "af_kingdom_22_restored", "value": {}},
       {"name": "Restore Kingdom 25", "tmpl": "af_kingdom_25_restored", "value": {}},
       {"name": "Restore Kingdom 29", "tmpl": "af_kingdom_29_restored", "value": {}},
       {"name": "Restore Kingdom 30", "tmpl": "af_kingdom_30_restored", "value": {}},
-      {"name": "Restore Kingdom 35", "tmpl": "af_kingdom_35_restored", "value": {}},
       {"name": "Restore Kingdom 40", "tmpl": "af_kingdom_40_restored", "value": {}},
       {"name": "Restore Kingdom 45", "tmpl": "af_kingdom_45_restored", "value": {}},
       {"name": "Restore Kingdom 50", "tmpl": "af_kingdom_50_restored", "value": {}},
@@ -1772,6 +1766,7 @@ const GAMES = {
     "Royal Match": {
     key:"B27HnbGEcbWC2fv79DDhcb", pkg:"com.dreamgames.royalmatch", ios:"id1482155847",
     events:[
+      {name:"level 10",tmpl:"level_10",value:{}},
       {name:"level 20",tmpl:"level_20",value:{}},
       {name:"level 60",tmpl:"level_60",value:{}},
       {name:"level 100",tmpl:"level_100",value:{}},
@@ -2376,17 +2371,37 @@ async function syncQueue() {
       headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
     });
     const data = await r.json();
-    const loaded = data.result ? JSON.parse(data.result) : [];
-    if (Array.isArray(loaded)) {
-      const localIds = new Set(queue.map(i => i.id));
-      const newItems = loaded.filter(i => !localIds.has(i.id));
-      if (newItems.length) {
-        queue = [...queue, ...newItems];
-        renderQueue();
-        renderTimersTab();
-        updateBadge();
-        log(`Synced ${newItems.length} new item(s) from another session`, 'info');
+    let loaded = data.result ? JSON.parse(data.result) : [];
+    if (typeof loaded === 'string') loaded = JSON.parse(loaded);
+    if (!Array.isArray(loaded)) return;
+
+    let changed = false;
+
+    // Update status of existing items (cron may have fired them)
+    queue.forEach(local => {
+      const remote = loaded.find(r => r.id === local.id);
+      if (remote && remote.status !== local.status) {
+        if (local.status === 'pending' && (remote.status === 'done' || remote.status === 'failed')) {
+          log(`✓ Cron fired [${local.gameName}] ${local.event.tmpl} → ${remote.status}`, remote.status === 'done' ? 'success' : 'error');
+        }
+        local.status = remote.status;
+        changed = true;
       }
+    });
+
+    // Add new items from other sessions
+    const localIds = new Set(queue.map(i => i.id));
+    const newItems = loaded.filter(i => !localIds.has(i.id));
+    if (newItems.length) {
+      queue = [...queue, ...newItems];
+      changed = true;
+      log(`Synced ${newItems.length} new item(s) from another session`, 'info');
+    }
+
+    if (changed) {
+      renderQueue();
+      renderTimersTab();
+      updateBadge();
     }
   } catch(e) {}
 }
@@ -2422,14 +2437,8 @@ function fireNow() {
 
 // ===== TICK =====
 function tickAll() {
-  const now = Date.now();
-  queue.forEach(item => {
-    if (item.status !== 'pending') return;
-    if (now >= item.fireAt) {
-      item.status = 'firing';
-      doFire(item.af_id, item.device_name, item.game, item.event, item.gameName, item);
-    }
-  });
+  // Firing is handled by the server-side cron job (/api/cron)
+  // tickAll only updates the UI countdown timers
   renderQueue();
   updateBadge();
 }
@@ -3278,17 +3287,11 @@ const GAMES = {
     events:[
       {"name": "Restore Kingdom 1", "tmpl": "af_kingdom_1_restored", "value": {}},
       {"name": "Restore Kingdom 5", "tmpl": "af_kingdom_5_restored", "value": {}},
-      {"name": "Restore Kingdom 8", "tmpl": "af_kingdom_8_restored", "value": {}},
       {"name": "Restore Kingdom 10", "tmpl": "af_kingdom_10_restored", "value": {}},
-      {"name": "Restore Kingdom 12", "tmpl": "af_kingdom_12_restored", "value": {}},
-      {"name": "Restore Kingdom 15", "tmpl": "af_kingdom_15_restored", "value": {}},
-      {"name": "Restore Kingdom 18", "tmpl": "af_kingdom_18_restored", "value": {}},
       {"name": "Restore Kingdom 20", "tmpl": "af_kingdom_20_restored", "value": {}},
-      {"name": "Restore Kingdom 22", "tmpl": "af_kingdom_22_restored", "value": {}},
       {"name": "Restore Kingdom 25", "tmpl": "af_kingdom_25_restored", "value": {}},
       {"name": "Restore Kingdom 29", "tmpl": "af_kingdom_29_restored", "value": {}},
       {"name": "Restore Kingdom 30", "tmpl": "af_kingdom_30_restored", "value": {}},
-      {"name": "Restore Kingdom 35", "tmpl": "af_kingdom_35_restored", "value": {}},
       {"name": "Restore Kingdom 40", "tmpl": "af_kingdom_40_restored", "value": {}},
       {"name": "Restore Kingdom 45", "tmpl": "af_kingdom_45_restored", "value": {}},
       {"name": "Restore Kingdom 50", "tmpl": "af_kingdom_50_restored", "value": {}},
@@ -3771,6 +3774,7 @@ const GAMES = {
     "Royal Match": {
     key:"B27HnbGEcbWC2fv79DDhcb", pkg:"com.dreamgames.royalmatch", ios:"id1482155847",
     events:[
+      {name:"level 10",tmpl:"level_10",value:{}},
       {name:"level 20",tmpl:"level_20",value:{}},
       {name:"level 60",tmpl:"level_60",value:{}},
       {name:"level 100",tmpl:"level_100",value:{}},
@@ -4375,17 +4379,37 @@ async function syncQueue() {
       headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
     });
     const data = await r.json();
-    const loaded = data.result ? JSON.parse(data.result) : [];
-    if (Array.isArray(loaded)) {
-      const localIds = new Set(queue.map(i => i.id));
-      const newItems = loaded.filter(i => !localIds.has(i.id));
-      if (newItems.length) {
-        queue = [...queue, ...newItems];
-        renderQueue();
-        renderTimersTab();
-        updateBadge();
-        log(`Synced ${newItems.length} new item(s) from another session`, 'info');
+    let loaded = data.result ? JSON.parse(data.result) : [];
+    if (typeof loaded === 'string') loaded = JSON.parse(loaded);
+    if (!Array.isArray(loaded)) return;
+
+    let changed = false;
+
+    // Update status of existing items (cron may have fired them)
+    queue.forEach(local => {
+      const remote = loaded.find(r => r.id === local.id);
+      if (remote && remote.status !== local.status) {
+        if (local.status === 'pending' && (remote.status === 'done' || remote.status === 'failed')) {
+          log(`✓ Cron fired [${local.gameName}] ${local.event.tmpl} → ${remote.status}`, remote.status === 'done' ? 'success' : 'error');
+        }
+        local.status = remote.status;
+        changed = true;
       }
+    });
+
+    // Add new items from other sessions
+    const localIds = new Set(queue.map(i => i.id));
+    const newItems = loaded.filter(i => !localIds.has(i.id));
+    if (newItems.length) {
+      queue = [...queue, ...newItems];
+      changed = true;
+      log(`Synced ${newItems.length} new item(s) from another session`, 'info');
+    }
+
+    if (changed) {
+      renderQueue();
+      renderTimersTab();
+      updateBadge();
     }
   } catch(e) {}
 }
@@ -4421,14 +4445,8 @@ function fireNow() {
 
 // ===== TICK =====
 function tickAll() {
-  const now = Date.now();
-  queue.forEach(item => {
-    if (item.status !== 'pending') return;
-    if (now >= item.fireAt) {
-      item.status = 'firing';
-      doFire(item.af_id, item.device_name, item.game, item.event, item.gameName, item);
-    }
-  });
+  // Firing is handled by the server-side cron job (/api/cron)
+  // tickAll only updates the UI countdown timers
   renderQueue();
   updateBadge();
 }
